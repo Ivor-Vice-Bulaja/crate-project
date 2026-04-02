@@ -117,9 +117,42 @@ catalogue number, genre tags. Match rate and field reliability TBD.*
 style tags. Coverage for electronic music TBD.*
 
 ### Essentia (audio analysis)
-*To be researched. See tasks/research-essentia.md for the research brief.
-Do not assume any fields, algorithms, configuration, or derived features until
-research is complete and findings are documented in docs/research/essentia.md.*
+Researched 2026-04-02. Full reference: `docs/research/essentia.md`.
+
+Native algorithm outputs:
+
+```
+RhythmExtractor2013  →  bpm (float, BPM), ticks (array, seconds), confidence (float, 0–5.32),
+                         estimates (array, BPM), bpmIntervals (array, seconds)
+KeyExtractor         →  key (str, e.g. "C"), scale (str, "major"/"minor"),
+                         strength (float, 0–1)
+LoudnessEBUR128      →  integratedLoudness (float, LUFS), loudnessRange (float, LU),
+                         momentaryLoudness (float), shortTermLoudness (float)
+SpectralCentroidTime →  centroid (float, Hz) — NOT [0, 1]; typical range ~500–5000 Hz
+EnergyBandRatio      →  energyBandRatio (float, 0–1) — one value per instance;
+                         instantiate separately for each band (e.g. 20–100 Hz, 8000+ Hz)
+PredominantPitchMelodia → pitch (array, Hz), pitchConfidence (array, 0–1)
+                           vocal_presence must be derived as mean(pitchConfidence)
+```
+
+Custom computations derived from Essentia outputs:
+```
+beat_regularity  →  1 - (std / mean) of bpmIntervals  →  range [0, 1]
+intro_length     →  bars before energy envelope crosses 50% of track mean energy
+outro_length     →  bars after energy drops below 50% of track mean energy
+vocal_presence   →  mean(pitchConfidence) over voiced frames  →  range [0, 1]
+```
+
+Configuration notes:
+- RhythmExtractor2013: method='multifeature'; set minTempo=100, maxTempo=160 for techno/house
+- KeyExtractor: profileType='edma' for electronic music
+- LoudnessEBUR128: requires stereo — use StereoMuxer if audio is mono
+- ML models (genre, mood via EffNet): require essentia-tensorflow, 16000 Hz input, separate model downloads
+- TempoCNN: requires 11025 Hz input
+
+Thread safety: not fully thread-safe; max 2 workers; algorithm instances must not be shared across threads.
+
+Windows: Python bindings do not work on native Windows. Use WSL2 or Linux Docker.
 
 ---
 
@@ -143,8 +176,9 @@ do not block subsequent steps.
 8. Write to DB      — single INSERT OR REPLACE
 ```
 
-Parallelism: steps 3–5 (network) can likely run concurrently with step 6 (CPU).
-Exact parallelism strategy TBD after Essentia thread-safety is confirmed in research.
+Parallelism: steps 3–5 (network) run concurrently with step 6 (CPU).
+Use ThreadPoolExecutor with max_workers=2. Essentia is not fully thread-safe —
+algorithm instances must not be shared across threads.
 
 Fallback chain for key fields — provisional, to be confirmed after source research:
 ```
