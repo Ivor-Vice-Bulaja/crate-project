@@ -1,0 +1,111 @@
+"""
+config.py — Centralised application settings.
+
+Why centralise config?
+- Every module that needs a setting imports it from one place.
+- Missing or misconfigured env vars are caught immediately at startup
+  with a clear error message, not buried in a stack trace three calls deep.
+- Secrets never appear as string literals in the codebase.
+
+Usage:
+    from backend.config import settings
+
+    api_key = settings.anthropic_api_key
+    db_path = settings.db_path
+
+How it works:
+    python-dotenv loads the .env file into the process environment.
+    Each field reads from os.environ. Fields marked as required raise
+    a clear ConfigurationError if the variable is missing or empty.
+"""
+
+import os
+from pathlib import Path
+
+from dotenv import load_dotenv
+
+# Load .env from the project root. Does nothing if .env does not exist
+# (environment variables already in the shell environment take precedence).
+_env_path = Path(__file__).parent.parent / ".env"
+load_dotenv(_env_path)
+
+
+class ConfigurationError(ValueError):
+    """Raised when a required environment variable is missing."""
+
+
+def _require(name: str) -> str:
+    """
+    Read a required environment variable.
+    Raises ConfigurationError with a helpful message if it is missing or empty.
+    """
+    value = os.environ.get(name, "").strip()
+    if not value:
+        raise ConfigurationError(
+            f"Required environment variable '{name}' is not set. "
+            f"Copy .env.example to .env and fill in your values."
+        )
+    return value
+
+
+def _optional(name: str, default: str = "") -> str:
+    """Read an optional environment variable, returning default if absent."""
+    return os.environ.get(name, default).strip()
+
+
+class Settings:
+    """
+    Application configuration. All env vars are read here.
+    Import `settings` (the singleton instance below), not this class.
+    """
+
+    # --- Required keys ---
+    # These raise ConfigurationError at startup if missing.
+    # Comment: we access them as properties so the error only triggers
+    # when actually needed — this allows tests to run without all keys set.
+
+    @property
+    def anthropic_api_key(self) -> str:
+        return _require("ANTHROPIC_API_KEY")
+
+    @property
+    def acoustid_api_key(self) -> str:
+        return _require("ACOUSTID_API_KEY")
+
+    # --- Optional keys ---
+
+    @property
+    def musicbrainz_app(self) -> str:
+        return _optional("MUSICBRAINZ_APP", "CrateApp/0.1")
+
+    @property
+    def discogs_token(self) -> str:
+        return _optional("DISCOGS_TOKEN")
+
+    @property
+    def spotify_client_id(self) -> str:
+        return _optional("SPOTIFY_CLIENT_ID")
+
+    @property
+    def spotify_client_secret(self) -> str:
+        return _optional("SPOTIFY_CLIENT_SECRET")
+
+    # --- Paths ---
+
+    @property
+    def db_path(self) -> str:
+        return _optional("DB_PATH", "./crate.db")
+
+    @property
+    def music_folder(self) -> str:
+        return _optional("MUSIC_FOLDER")
+
+    # --- Runtime settings ---
+
+    @property
+    def log_level(self) -> str:
+        return _optional("LOG_LEVEL", "INFO").upper()
+
+
+# Singleton — import this, not the class.
+settings = Settings()

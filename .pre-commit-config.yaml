@@ -1,0 +1,53 @@
+# .pre-commit-config.yaml
+#
+# What is pre-commit?
+# Pre-commit is a framework that runs checks automatically before every
+# git commit. If any check fails, the commit is blocked. This catches
+# problems locally — on your machine — before the code reaches GitHub
+# or triggers the CI pipeline.
+#
+# How to install (one-time setup):
+#   uv run pre-commit install
+#
+# How to run manually against all files:
+#   uv run pre-commit run --all-files
+#
+# How to update hook versions:
+#   uv run pre-commit autoupdate
+
+repos:
+  # ---------------------------------------------------------------------------
+  # Ruff — lint and format Python code
+  # Replaces flake8, black, and isort in a single fast tool.
+  # ---------------------------------------------------------------------------
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.0
+    hooks:
+      - id: ruff           # linting: catches errors, style violations, bad patterns
+        args: [--fix]      # auto-fix safe issues (unused imports, etc.)
+      - id: ruff-format    # formatting: rewrites code to a consistent style
+
+  # ---------------------------------------------------------------------------
+  # General file hygiene — tiny checks that prevent common annoyances
+  # ---------------------------------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace   # removes trailing spaces from every line
+      - id: end-of-file-fixer     # ensures every file ends with a newline
+      - id: check-yaml            # validates .yaml files are syntactically correct
+      - id: check-toml            # validates .toml files (catches typos in pyproject.toml)
+      - id: check-merge-conflict  # blocks commits that contain unresolved merge markers
+      - id: check-added-large-files  # warns if you accidentally stage a large file
+        args: ['--maxkb=1000']    # block files larger than 1MB
+      - id: check-case-conflict   # catches filename case conflicts (bad on case-insensitive filesystems)
+
+  # ---------------------------------------------------------------------------
+  # .env protection — the most important check.
+  # Blocks you from accidentally committing a file named .env
+  # (which would expose your API keys to the world).
+  # ---------------------------------------------------------------------------
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: detect-private-key    # detects accidentally committed private keys

@@ -1,0 +1,87 @@
+# =============================================================================
+# Crate project .gitignore
+# =============================================================================
+
+# --- Secrets and user-specific config ----------------------------------------
+# .env contains API keys and local paths. NEVER commit this.
+# If you accidentally commit it, rotate every key in it immediately.
+.env
+.env.local
+.env.*.local
+
+# --- Python ------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+env/
+ENV/
+.Python
+build/
+dist/
+*.egg-info/
+.eggs/
+*.egg
+pip-log.txt
+pip-delete-this-directory.txt
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.pyright/
+*.pyo
+
+# --- User data — never committed ---------------------------------------------
+# The SQLite database contains the user's entire music library metadata.
+# It is generated locally and should never be in version control.
+crate.db
+crate.db-wal
+crate.db-shm
+
+# The music folder itself — audio files are large and personal.
+# Set MUSIC_FOLDER in .env to point to your local library.
+music/
+
+# Essentia ML model files — large binary files downloaded separately.
+# See docs/ for how to download them.
+*.pb
+*.pb.txt
+models/
+
+# --- Frontend ----------------------------------------------------------------
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# --- OS files ----------------------------------------------------------------
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# --- IDE files ---------------------------------------------------------------
+# Commit .vscode/extensions.json (recommended extensions — useful to everyone)
+# and .vscode/settings.json (project-wide settings — also useful to everyone)
+# but NOT .vscode/*.code-workspace (personal workspace files)
+.vscode/*.code-workspace
+.idea/
+*.swp
+*.swo
+*~
+
+# --- Temporary files ---------------------------------------------------------
+*.tmp
+*.bak
+*.orig
+*.log
+logs/

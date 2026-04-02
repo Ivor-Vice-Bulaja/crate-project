@@ -1,0 +1,20 @@
+{
+  // Recommended VS Code extensions for this project.
+  // VS Code will prompt you to install these when you open the workspace.
+  "recommendations": [
+    // Python development
+    "ms-python.python",           // Python language support, debugging
+    "ms-python.vscode-pylance",   // Pyright type checker + IntelliSense
+    "charliermarsh.ruff",         // Ruff linter + formatter (replaces flake8, black)
+
+    // JavaScript / React development
+    "dbaeumer.vscode-eslint",     // ESLint integration — shows lint errors inline
+    "esbenp.prettier-vscode",     // Prettier formatter for JS/JSX/JSON/CSS
+
+    // Git
+    "eamodio.gitlens",            // Git blame, history, and diff in the editor
+
+    // Database
+    "qwtel.sqlite-viewer"         // View and query crate.db directly in VS Code
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  // Python interpreter — points to the uv-managed virtual environment.
+  // This ensures VS Code uses the same Python as 'uv run'.
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+
+  // Pyright type checking — 'basic' mode checks annotated code without
+  // demanding that everything be annotated.
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.autoImportCompletions": true,
+
+  // Ruff: use as the default Python formatter and linter.
+  // 'organizeImports' runs isort-style import sorting on save.
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit"
+    }
+  },
+
+  // Prettier: default formatter for JavaScript and JSX.
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true
+  },
+
+  // ESLint: validate JS files and apply auto-fixes on save.
+  "eslint.validate": ["javascript", "javascriptreact"],
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+
+  // File associations
+  "files.associations": {
+    "*.env.example": "dotenv"
+  },
+
+  // Exclude generated directories from the file explorer and search.
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.ruff_cache": true,
+    "**/node_modules": true,
+    "frontend/dist": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "frontend/dist": true,
+    "**/__pycache__": true,
+    "uv.lock": true
+  }
+}
