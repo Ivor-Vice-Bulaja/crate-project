@@ -79,6 +79,9 @@ desktop.ini
 *.swo
 *~
 
+# --- Claude Code internal files ----------------------------------------------
+.claude/
+
 # --- Temporary files ---------------------------------------------------------
 *.tmp
 *.bak

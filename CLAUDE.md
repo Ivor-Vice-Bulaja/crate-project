@@ -117,35 +117,17 @@ catalogue number, genre tags. Match rate and field reliability TBD.*
 style tags. Coverage for electronic music TBD.*
 
 ### Essentia (audio analysis)
-Researched. Native outputs:
-
-```
-RhythmExtractor2013   →  bpm, bpm_confidence, beat_ticks, bpm_intervals
-KeyExtractor (edma)   →  key, key_scale, key_strength
-LoudnessEBUR128       →  loudness_lufs (integrated), dynamic_range (LRA)
-SpectralCentroidTime  →  spectral_centroid (mean across frames, 0–1)
-EnergyBandRatio       →  sub_bass_energy (20–100Hz), high_freq_energy (8kHz+)
-PredominantPitchMelodia → vocal_presence (mean confidence, 0–1)
-```
-
-Custom computations derived from Essentia outputs:
-```
-beat_regularity   →  1 - (std / mean) of bpm_intervals
-intro_length      →  bars before energy envelope crosses 50% of track mean
-outro_length      →  bars after energy drops below 50% of track mean
-```
-
-Notes:
-- RhythmExtractor2013 requires 44100 Hz. Set minTempo=100, maxTempo=160 for techno/house.
-- KeyExtractor: always use profileType='edma' for electronic music.
-- LoudnessEBUR128 requires stereo input — use StereoMuxer on mono audio.
-- ML models (EffNet genre classifier) require 16000 Hz and separate model files.
-- Derived score formulas (energy_score, darkness_score, groove_score) are
-  provisional and must be validated against real tracks before use.
+*To be researched. See tasks/research-essentia.md for the research brief.
+Do not assume any fields, algorithms, configuration, or derived features until
+research is complete and findings are documented in docs/research/essentia.md.*
 
 ---
 
 ## Import Pipeline (intended design — not yet built)
+
+> The step order and parallelism strategy below are directionally correct but
+> details (timing, field names, fallback chain) must be confirmed after Phase 1
+> research is complete.
 
 Order of operations for a single track. Each step is independent — partial failures
 do not block subsequent steps.
@@ -153,16 +135,16 @@ do not block subsequent steps.
 ```
 1. Hash check       — skip if file unchanged (same path + same hash)
 2. Read file tags   — mutagen, instant, no network
-3. AcoustID         — fingerprint + query, ~2s, needs network
+3. AcoustID         — fingerprint + query, needs network
 4. MusicBrainz      — fetch full metadata using recording ID from step 3
 5. Discogs          — enrich label/catalogue where MusicBrainz is weak
-6. Essentia         — local audio analysis, ~5–15s per track, no network
+6. Essentia         — local audio analysis, no network
 7. Compute scores   — derived scores from Essentia features
 8. Write to DB      — single INSERT OR REPLACE
 ```
 
-Parallelism: steps 3–5 (network) can run concurrently with step 6 (CPU).
-Use ThreadPoolExecutor with workers=2 (Essentia is not fully thread-safe).
+Parallelism: steps 3–5 (network) can likely run concurrently with step 6 (CPU).
+Exact parallelism strategy TBD after Essentia thread-safety is confirmed in research.
 
 Fallback chain for key fields — provisional, to be confirmed after source research:
 ```
@@ -187,7 +169,7 @@ The schema will be designed around confirmed source outputs. Expected sections:
 - Tag data (from mutagen — reliability TBC)
 - MusicBrainz data (fields TBC after research)
 - Discogs data (fields TBC after research)
-- Essentia audio features (confirmed — see Data Sources above)
+- Essentia audio features (TBC after research — see tasks/research-essentia.md)
 - Derived scores (formulas TBC after validation on real tracks)
 - Crate tables (stable — see below)
 - Usage tracking (last_played_date, play_count)
@@ -330,13 +312,14 @@ LOG_LEVEL=INFO
 
 ## Build Phases
 
-**Phase 0 — Repository setup (current)**
-- [ ] Initialise repo with uv, pyproject.toml, Ruff, pre-commit, pytest
-- [ ] GitHub Actions CI pipeline
-- [ ] React + Vite frontend scaffold with ESLint + Prettier
-- [ ] .env.example, .gitignore, README.md
+**Phase 0 — Repository setup (complete)**
+- [x] Initialise repo with uv, pyproject.toml, Ruff, pre-commit, pytest
+- [x] GitHub Actions CI pipeline
+- [x] React + Vite frontend scaffold with ESLint + Prettier
+- [x] .env.example, .gitignore, README.md
 
-**Phase 1 — Research and data mapping**
+**Phase 1 — Research and data mapping (current)**
+- [ ] Research Essentia — algorithms, ML models, outputs (tasks/research-essentia.md)
 - [ ] Research AcoustID API — exact outputs, rate limits, match rate
 - [ ] Research MusicBrainz API — exact outputs, field reliability
 - [ ] Research Discogs API — exact outputs, coverage for electronic music
