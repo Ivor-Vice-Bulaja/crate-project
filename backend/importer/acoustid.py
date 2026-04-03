@@ -279,13 +279,14 @@ def _fetch_mb_recording(mb_recording_id: str, config: AcoustIDConfig) -> dict:
         mb_artist_id = artist_obj.get("id")
         artist_sort_name = artist_obj.get("sort-name")
 
-    # ISRC (first one only)
-    isrcs = recording.get("isrcs", [])
+    # ISRC (first one only) — musicbrainzngs returns "isrc-list", not "isrcs"
+    isrcs = recording.get("isrc-list", [])
     isrc = isrcs[0] if isrcs else None
 
-    # Genres and tags
-    genres = [g["name"] for g in recording.get("genres", [])]
-    tags = [t["name"] for t in recording.get("tags", [])]
+    # Tags — musicbrainzngs returns "tag-list", not "tags"
+    # genres is not supported by musicbrainzngs 0.7.1 so always []
+    genres = []
+    tags = [t["name"] for t in recording.get("tag-list", [])]
 
     # Select best release — musicbrainzngs returns "release-list", not "releases"
     releases = recording.get("release-list", [])

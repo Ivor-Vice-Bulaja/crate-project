@@ -104,7 +104,7 @@ def mb_recording_response():
             "title": "Test Track",
             "length": "210000",
             "first-release-date": "2020-06-15",
-            "isrcs": ["USRC12345678"],
+            "isrc-list": ["USRC12345678"],
             "artist-credit": [
                 {
                     "name": "Test Artist",
@@ -125,8 +125,7 @@ def mb_recording_response():
                     "country": "XW",
                 }
             ],
-            "genres": [{"name": "techno"}, {"name": "electronic"}],
-            "tags": [{"name": "dark"}, {"name": "industrial"}],
+            "tag-list": [{"name": "dark"}, {"name": "industrial"}],
         }
     }
 
@@ -344,7 +343,7 @@ class TestSuccessPath:
         assert result["mb_release_group_type"] == "EP"
         assert result["label"] == "Test Records"
         assert result["catalogue_number"] == "TEST-001"
-        assert result["genres"] == ["techno", "electronic"]
+        assert result["genres"] == []  # genres not supported by musicbrainzngs 0.7.1
         assert result["tags"] == ["dark", "industrial"]
 
     def test_no_releases_linked_to_recording(self, fingerprint_ok, acoustid_response_full, config):
