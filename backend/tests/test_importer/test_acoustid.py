@@ -136,7 +136,9 @@ def mb_release_response():
     return {
         "release": {
             "id": "release-uuid-001",
-            "label-info": [
+            "status": "Official",
+            "date": "2020-06-15",
+            "label-info-list": [
                 {
                     "label": {"name": "Test Records"},
                     "catalog-number": "TEST-001",

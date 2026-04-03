@@ -302,7 +302,15 @@ def _fetch_mb_recording(mb_recording_id: str, config: AcoustIDConfig) -> dict:
     if config.fetch_label and mb_release_id:
         if config.mb_rate_limit:
             time.sleep(1)
-        label, catalogue_number = _fetch_release_label(mb_release_id)
+        label, catalogue_number, release_status_from_lookup, year_from_lookup = (
+            _fetch_release_label(mb_release_id)
+        )
+        # Prefer release lookup values — they are more reliably populated than
+        # the embedded release stub returned inside the recording response.
+        if release_status_from_lookup is not None:
+            release_status = release_status_from_lookup
+        if year_from_lookup is not None:
+            year = year_from_lookup
 
     return {
         "mb_release_id": mb_release_id,
@@ -323,10 +331,17 @@ def _fetch_mb_recording(mb_recording_id: str, config: AcoustIDConfig) -> dict:
     }
 
 
-def _fetch_release_label(mb_release_id: str) -> tuple[str | None, str | None]:
+def _fetch_release_label(
+    mb_release_id: str,
+) -> tuple[str | None, str | None, str | None, int | None]:
     """
-    Fetch label and catalogue number from a MusicBrainz release.
-    Returns (None, None) on any failure.
+    Fetch label, catalogue number, release status, and year from a MusicBrainz release.
+    Returns (None, None, None, None) on any failure.
+
+    Key names confirmed from musicbrainzngs mbxml.py parser:
+    - "label-info-list" (not "label-info")
+    - "catalog-number" (American spelling)
+    - "status" and "date" are top-level fields on the release
     """
     try:
         release_result = musicbrainzngs.get_release_by_id(
@@ -334,12 +349,21 @@ def _fetch_release_label(mb_release_id: str) -> tuple[str | None, str | None]:
             includes=["labels"],
         )
         release = release_result["release"]
-        label_info = release.get("label-info", [])
+
+        label_info = release.get("label-info-list", [])
         if label_info:
             label = label_info[0].get("label", {}).get("name")
             catalogue_number = label_info[0].get("catalog-number")
-            return label, catalogue_number
-        return None, None
+        else:
+            label = None
+            catalogue_number = None
+
+        status = release.get("status")
+
+        date = release.get("date", "")
+        year = int(date[:4]) if date and len(date) >= 4 else None
+
+        return label, catalogue_number, status, year
     except Exception as exc:  # noqa: BLE001
         logger.warning("Release label lookup failed for %s: %s", mb_release_id, exc)
-        return None, None
+        return None, None, None, None
