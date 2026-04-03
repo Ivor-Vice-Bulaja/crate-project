@@ -225,7 +225,7 @@ def _fetch_mb_recording(mb_recording_id: str, config: AcoustIDConfig) -> dict:
     try:
         result = musicbrainzngs.get_recording_by_id(
             mb_recording_id,
-            includes=["artist-credits", "releases", "isrcs", "tags", "genres"],
+            includes=["artist-credits", "releases", "isrcs", "tags"],
         )
     except musicbrainzngs.ResponseError:
         # 404 — recording deleted or merged; store the ID but null the metadata.
@@ -236,7 +236,7 @@ def _fetch_mb_recording(mb_recording_id: str, config: AcoustIDConfig) -> dict:
         try:
             result = musicbrainzngs.get_recording_by_id(
                 mb_recording_id,
-                includes=["artist-credits", "releases", "isrcs", "tags", "genres"],
+                includes=["artist-credits", "releases", "isrcs", "tags"],
             )
         except musicbrainzngs.NetworkError as exc:
             logger.warning("MusicBrainz network error for %s after retry: %s", mb_recording_id, exc)
