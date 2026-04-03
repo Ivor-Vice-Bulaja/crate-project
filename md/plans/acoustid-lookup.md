@@ -128,15 +128,18 @@ title = recording.get("title")
 
 # Duration (MB returns milliseconds; convert to seconds)
 length_ms = recording.get("length")
-mb_duration_s = round(length_ms / 1000, 3) if length_ms else None
-
-# First release year
-first_date = recording.get("first-release-date", "")
-year = int(first_date[:4]) if first_date and len(first_date) >= 4 else None
+mb_duration_s = round(int(length_ms) / 1000, 3) if length_ms else None
 
 # Artist (assemble from credits array with join phrases)
+# NOTE: "name" at the top level is only present when the credited name differs
+# from the canonical name — fall back to artist.name when absent.
 credits = recording.get("artist-credit", [])
-artist = "".join(c.get("name", "") + c.get("joinphrase", "") for c in credits).strip() or None
+artist = (
+    "".join(
+        c.get("name", c.get("artist", {}).get("name", "")) + c.get("joinphrase", "")
+        for c in credits if isinstance(c, dict)
+    ).strip() or None
+)
 
 # Artist MBID (first credited artist)
 mb_artist_id = credits[0]["artist"]["id"] if credits else None
@@ -145,15 +148,19 @@ mb_artist_id = credits[0]["artist"]["id"] if credits else None
 artist_sort_name = credits[0]["artist"].get("sort-name") if credits else None
 
 # ISRC (first one only; often absent for electronic music)
-isrcs = recording.get("isrcs", [])
+# NOTE: musicbrainzngs returns "isrc-list", not "isrcs"
+isrcs = recording.get("isrc-list", [])
 isrc = isrcs[0] if isrcs else None
 
-# Genres and tags (community-contributed; sparse for electronic music)
-genres = [g["name"] for g in recording.get("genres", [])]
-tags = [t["name"] for t in recording.get("tags", [])]
+# Tags (community-contributed; sparse for electronic music)
+# NOTE: musicbrainzngs returns "tag-list", not "tags"
+# NOTE: "genres" include is not supported by musicbrainzngs 0.7.1 — always []
+genres = []
+tags = [t["name"] for t in recording.get("tag-list", [])]
 
 # Select best release for label/catalogue lookup
-releases = recording.get("releases", [])
+# NOTE: musicbrainzngs returns "release-list", not "releases"
+releases = recording.get("release-list", [])
 best_release = _select_best_release(releases)
 mb_release_id = best_release["id"] if best_release else None
 mb_release_title = best_release.get("title") if best_release else None
@@ -188,19 +195,27 @@ release_result = musicbrainzngs.get_release_by_id(
     includes=["labels"]
 )
 release = release_result["release"]
-label_info = release.get("label-info", [])
+# NOTE: musicbrainzngs returns "label-info-list", not "label-info"
+label_info = release.get("label-info-list", [])
 if label_info:
     label = label_info[0].get("label", {}).get("name")
     catalogue_number = label_info[0].get("catalog-number")  # American spelling
 else:
     label = None
     catalogue_number = None
+
+# status and year are more reliably present on the release than on the
+# embedded stub inside the recording response — prefer these values.
+release_status = release.get("status") or release_status
+date = release.get("date", "")
+year = int(date[:4]) if date and len(date) >= 4 else year
 ```
 
 - **On any exception**: log `WARNING`; set `label = None`, `catalogue_number = None`.
   Do not set `lookup_error`. The recording metadata is still valid.
 - The field name in the MusicBrainz JSON is `catalog-number` (American spelling), not
   `catalogue-number`.
+- The field name is `label-info-list`, not `label-info`.
 
 ---
 
