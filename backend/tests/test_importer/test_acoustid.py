@@ -116,7 +116,7 @@ def mb_recording_response():
                     },
                 }
             ],
-            "releases": [
+            "release-list": [
                 {
                     "id": "release-uuid-001",
                     "title": "Test EP",
@@ -277,7 +277,7 @@ class TestCoreAssertions:
                         "artist": {"id": "x", "name": "A", "sort-name": "A"},
                     }
                 ],
-                "releases": [],
+                "release-list": [],
                 "genres": [],
                 "tags": [],
             }
@@ -362,7 +362,7 @@ class TestSuccessPath:
                         "artist": {"id": "ax", "name": "DJ X", "sort-name": "X, DJ"},
                     }
                 ],
-                "releases": [],
+                "release-list": [],
                 "genres": [],
                 "tags": [],
             }

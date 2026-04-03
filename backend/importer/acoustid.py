@@ -258,11 +258,15 @@ def _fetch_mb_recording(mb_recording_id: str, config: AcoustIDConfig) -> dict:
     first_date = recording.get("first-release-date", "")
     year = int(first_date[:4]) if first_date and len(first_date) >= 4 else None
 
-    # Artist (assembled from credits array with join phrases)
+    # Artist (assembled from credits array with join phrases).
+    # Each credit entry has an "artist" sub-object with the name; "name" at the
+    # top level is only present when the credited name differs from the canonical name.
     credits = recording.get("artist-credit", [])
     artist = (
         "".join(
-            c.get("name", "") + c.get("joinphrase", "") for c in credits if isinstance(c, dict)
+            c.get("name", c.get("artist", {}).get("name", "")) + c.get("joinphrase", "")
+            for c in credits
+            if isinstance(c, dict)
         ).strip()
         or None
     )
@@ -283,8 +287,8 @@ def _fetch_mb_recording(mb_recording_id: str, config: AcoustIDConfig) -> dict:
     genres = [g["name"] for g in recording.get("genres", [])]
     tags = [t["name"] for t in recording.get("tags", [])]
 
-    # Select best release
-    releases = recording.get("releases", [])
+    # Select best release — musicbrainzngs returns "release-list", not "releases"
+    releases = recording.get("release-list", [])
     best_release = _select_best_release(releases)
     mb_release_id = best_release["id"] if best_release else None
     mb_release_title = best_release.get("title") if best_release else None
