@@ -34,8 +34,11 @@ dependencies = [
 # Heavy audio analysis — Essentia requires native libraries.
 # Install with: uv sync --extra analysis
 # Not installed in CI — see .github/workflows/ci.yml for why.
+# Minimum 2.1b6.dev1177: first version with Python 3.12 wheels.
 analysis = [
-    "essentia>=2.1b6.dev1110",
+    "essentia>=2.1b6.dev1177",
+    "essentia-tensorflow>=2.1b6.dev1177",
+    "numpy>=1.26.0",
 ]
 
 # Development tools — linters, formatters, test framework.
@@ -48,6 +51,7 @@ dev = [
     "ruff>=0.4.0",
     "pyright>=1.1.360",
     "pre-commit>=3.7.0",
+    "soundfile>=0.12.0",       # test fixture: write synthetic WAV files
 ]
 
 # ---------------------------------------------------------------------------
@@ -126,6 +130,9 @@ addopts = [
     "--tb=short",             # shorter tracebacks
     "--strict-markers",       # fail if unknown markers are used
 ]
+markers = [
+    "slow: marks tests as slow — excluded from default CI run (deselect with '-m not slow')",
+]
 
 # Coverage configuration (used when running: uv run pytest --cov=backend)
 [tool.coverage.run]
@@ -138,3 +145,8 @@ omit = [
 [tool.coverage.report]
 show_missing = true
 skip_covered = false
+
+[dependency-groups]
+dev = [
+    "pre-commit>=4.5.1",
+]

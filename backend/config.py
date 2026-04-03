@@ -20,6 +20,7 @@ How it works:
 """
 
 import os
+from dataclasses import dataclass, field
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -109,3 +110,30 @@ class Settings:
 
 # Singleton — import this, not the class.
 settings = Settings()
+
+
+@dataclass
+class EssentiaConfig:
+    """
+    All tuneable settings for the Essentia audio analysis module.
+
+    Pass an instance of this to analyse_track(). Nothing is hardcoded in
+    essentia_analysis.py — every knob lives here.
+    """
+
+    # RhythmExtractor2013 tempo bounds (BPM). Set for techno/house ranges.
+    min_tempo: int = 100
+    max_tempo: int = 160
+
+    # How many top genre label strings to store in genre_top_labels.
+    genre_top_n: int = 5
+
+    # Directory containing TensorFlow .pb model files and .json metadata files.
+    model_dir: Path = field(default_factory=lambda: Path("./models"))
+
+    # Set False to skip the entire ML section (no essentia-tensorflow needed).
+    # CI and lightweight environments should leave this False.
+    run_ml_models: bool = True
+
+    # Set False to skip PredominantPitchMelodia (slow: ~10–30 s per track).
+    run_pitch_analysis: bool = True
