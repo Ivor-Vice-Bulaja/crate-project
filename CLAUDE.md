@@ -109,8 +109,63 @@ These must not be implemented until the relevant research is done:
 duration, sample_rate. Reliability on a DJ library TBD.*
 
 ### AcoustID + MusicBrainz
-*To be researched. Expected: recording ID, title, artist, album, label, year,
-catalogue number, genre tags. Match rate and field reliability TBD.*
+Researched 2026-04-03. Full reference: `docs/research/acoustid.md`.
+
+**AcoustID lookup** (`meta=recordings+releasegroups`) returns:
+```
+acoustid_id       →  string (UUID) — AcoustID fingerprint identifier
+acoustid_score    →  float 0.0–1.0 — fingerprint match confidence; no official threshold
+mb_recording_id   →  string (UUID) — MusicBrainz recording UUID; use for MB lookup
+title             →  string — sometimes absent if not in MB
+duration          →  integer, SECONDS (not ms) — sometimes absent
+artists[].id      →  MusicBrainz artist UUID
+artists[].name    →  string
+releasegroups[].id    →  UUID
+releasegroups[].title →  string (album title)
+releasegroups[].type  →  "Album", "Single", "EP", etc.
+```
+No label, catalogue number, year, genre, ISRC, or BPM from AcoustID directly.
+
+**MusicBrainz recording lookup** (`inc=artist-credits+releases+isrcs+tags+genres`) returns:
+```
+id                         →  string (UUID) — recording MBID
+title                      →  string — always present
+length                     →  integer, MILLISECONDS — sometimes null
+first-release-date         →  string "YYYY", "YYYY-MM", or "YYYY-MM-DD" — sometimes absent
+video                      →  boolean
+disambiguation             →  string (usually "")
+isrcs[]                    →  array of ISRC strings — often empty for electronic music
+artist-credit[].name       →  credited name string
+artist-credit[].joinphrase →  join string (e.g. " feat. ", " & ")
+artist-credit[].artist.id  →  MusicBrainz artist UUID
+artist-credit[].artist.name         →  canonical artist name
+artist-credit[].artist.sort-name    →  sort-order name
+artist-credit[].artist.type         →  "Person", "Group", etc.
+artist-credit[].artist.country      →  ISO 3166-1 code; sometimes absent
+releases[].id              →  release MBID
+releases[].title           →  release title
+releases[].status          →  "Official", "Promotion", "Bootleg", "Pseudo-Release"
+releases[].date            →  string, partial dates possible; sometimes absent
+releases[].country         →  ISO 3166-1 code; null for worldwide
+releases[].barcode         →  string or null
+releases[].release-events[].date    →  all regional release dates
+tags[].name / tags[].count →  community tags — sparse for electronic music
+genres[].name / genres[].count →  genre labels — sparse for electronic music
+```
+
+**Label and catalogue number require a separate release lookup:**
+```
+GET /ws/2/release/{RELEASE_MBID}?inc=labels
+→ label-info[].label.name        — label name
+→ label-info[].catalog-number    — note: American spelling; not "catalogue"
+```
+
+**Key unit difference**: AcoustID `duration` is in **seconds**; MusicBrainz `length` is in **milliseconds**.
+
+**Match rate**: No published data for electronic music specifically. White labels,
+promos, and DJ edits are unlikely to be in AcoustID. Major-label electronic releases
+generally have coverage. Estimate 30–60% no-match rate for a typical techno/house
+library — to be validated in Phase 2.
 
 ### Discogs API
 *To be researched. Expected: label, catalogue number, release year, genre,

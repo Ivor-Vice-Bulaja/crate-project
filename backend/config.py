@@ -137,3 +137,31 @@ class EssentiaConfig:
 
     # Set False to skip PredominantPitchMelodia (slow: ~10–30 s per track).
     run_pitch_analysis: bool = True
+
+
+@dataclass
+class AcoustIDConfig:
+    """
+    All tuneable settings for the AcoustID + MusicBrainz lookup module.
+
+    Pass an instance of this to identify_track(). Every knob lives here —
+    nothing is hardcoded in acoustid.py.
+    """
+
+    # AcoustID application API key. Required — obtain free at acoustid.org/api-key.
+    acoustid_api_key: str = field(default_factory=lambda: _require("ACOUSTID_API_KEY"))
+
+    # Request timeout in seconds for the AcoustID API call.
+    acoustid_timeout: int = 10
+
+    # Email or URL included in the MusicBrainz User-Agent header.
+    # Required by MusicBrainz terms of service.
+    mb_contact: str = field(default_factory=lambda: _require("MUSICBRAINZ_APP"))
+
+    # Whether to sleep 1 s before each MusicBrainz call to stay within
+    # the 1 req/s rate limit. Disable only in tests.
+    mb_rate_limit: bool = True
+
+    # Whether to make a second MusicBrainz call to fetch label and
+    # catalogue number from the selected release. Adds ~1 s per track.
+    fetch_label: bool = True
