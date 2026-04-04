@@ -269,7 +269,7 @@ Key questions to address:
 Write the plan as a single Markdown document saved to:
 
 ```
-docs/plans/essentia-extractor.md
+md/plans/essentia-extractor.md
 ```
 
 Structure:
@@ -321,7 +321,7 @@ Numbered steps to build this module in Phase 2.
 
 ## Definition of done
 
-- [ ] `docs/plans/essentia-extractor.md` exists
+- [ ] `md/plans/essentia-extractor.md` exists
 - [ ] Standard algorithm pipeline table covers every algorithm listed in section 3
 - [ ] ML model pipeline covers all four model families in section 4
 - [ ] Output schema table covers every field listed in section 5
