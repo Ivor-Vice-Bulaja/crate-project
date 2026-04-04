@@ -101,6 +101,32 @@ Until models are downloaded, run Essentia scripts with `--no-ml`.
 
 ---
 
+## WSL2 Troubleshooting
+
+If `wsl --install` or `wsl --install -d Ubuntu` gets stuck at 0% (Ubuntu download stalls), bypass the Microsoft Store entirely using the Ubuntu rootfs:
+
+**1. Download the rootfs** (PowerShell as admin):
+
+```powershell
+Invoke-WebRequest -Uri "https://cloud-images.ubuntu.com/wsl/jammy/current/ubuntu-jammy-wsl-amd64-wsl.rootfs.tar.gz" -OutFile "$env:USERPROFILE\ubuntu.tar.gz"
+```
+
+**2. Import it into WSL2:**
+
+```powershell
+wsl --import Ubuntu C:\WSL\Ubuntu "$env:USERPROFILE\ubuntu.tar.gz"
+```
+
+**3. Launch WSL:**
+
+```powershell
+wsl
+```
+
+Note: the WSL2 kernel itself (`Virtual Machine Platform` + `Windows Subsystem for Linux`) installs fine — it's only the Ubuntu distro download that stalls. The rootfs method bypasses that entirely.
+
+---
+
 ## Verify Setup
 
 ```bash
