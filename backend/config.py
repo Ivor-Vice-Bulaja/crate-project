@@ -165,3 +165,47 @@ class AcoustIDConfig:
     # Whether to make a second MusicBrainz call to fetch label and
     # catalogue number from the selected release. Adds ~1 s per track.
     fetch_label: bool = True
+
+
+@dataclass
+class DiscogsConfig:
+    """
+    All tuneable settings for the Discogs API enrichment module.
+
+    Pass an instance of this to fetch_discogs_metadata(). Nothing is
+    hardcoded in discogs.py — every knob lives here.
+    """
+
+    # Personal access token for Discogs API auth.
+    # None → unauthenticated, rate-limited to 25 req/min.
+    # Set via DISCOGS_TOKEN env var.
+    discogs_token: str | None = field(
+        default_factory=lambda: _optional("DISCOGS_TOKEN") or None
+    )
+
+    # User-Agent header sent with every request.
+    # Required by Discogs API terms of service.
+    user_agent: str = field(
+        default_factory=lambda: _optional("DISCOGS_APP", "CrateApp/0.1 (user@example.com)")
+    )
+
+    # Max candidates to score per search call (per_page). Cap at 10.
+    max_search_results: int = 5
+
+    # Minimum score for "high" confidence.
+    confidence_threshold_high: float = 3.0
+
+    # Minimum score for "low" confidence. Below this → treated as no match.
+    confidence_threshold_low: float = 1.0
+
+    # Whether to make an extra API call to fetch the master release
+    # (adds discogs_master_year and discogs_master_most_recent_id).
+    fetch_master: bool = False
+
+    # Whether to make an extra API call to fetch the label endpoint.
+    # Deferred — defaults False; label name/catno already in release response.
+    fetch_label: bool = False
+
+    # Whether to add format=Vinyl on the first artist+title search attempt.
+    # A DJ library is overwhelmingly vinyl; the filter reduces noise.
+    vinyl_filter_first: bool = True
