@@ -209,3 +209,22 @@ class DiscogsConfig:
     # Whether to add format=Vinyl on the first artist+title search attempt.
     # A DJ library is overwhelmingly vinyl; the filter reduces noise.
     vinyl_filter_first: bool = True
+
+
+@dataclass
+class CoverArtConfig:
+    """
+    All tuneable settings for the Cover Art Archive lookup module.
+
+    Pass an instance of this to fetch_cover_art(). No authentication required —
+    the CAA is a public API.
+    """
+
+    # Pixel width of the stored thumbnail URL. CAA supports 250, 500, or 1200.
+    thumbnail_size: int = 500
+
+    # requests.get timeout in seconds.
+    timeout: int = 5
+
+    # User-Agent header sent with every request.
+    user_agent: str = "CrateApp/0.1"

@@ -20,6 +20,7 @@ import time
 
 import acoustid
 import musicbrainzngs
+import requests
 
 from backend.config import AcoustIDConfig
 
@@ -56,9 +57,11 @@ def _null_result(lookup_error: str | None = None) -> dict:
         "mb_release_title": None,
         "release_status": None,
         "release_country": None,
+        "mb_release_group_id": None,
         "mb_release_group_type": None,
         "label": None,
         "catalogue_number": None,
+        "mb_has_front_art": None,
         "genres": None,
         "tags": None,
     }
@@ -175,8 +178,9 @@ def _identify_track_inner(file_path: str, config: AcoustIDConfig) -> dict:
     recording_stub = recordings[0]
     mb_recording_id = recording_stub.get("id")
 
-    # Extract release group type from the AcoustID recording stub if present.
+    # Extract release group ID and type from the AcoustID recording stub if present.
     rgs = recording_stub.get("releasegroups", [])
+    mb_release_group_id = rgs[0].get("id") if rgs else None
     mb_release_group_type = rgs[0].get("type") if rgs else None
 
     # --- MusicBrainz recording lookup ---
@@ -193,6 +197,7 @@ def _identify_track_inner(file_path: str, config: AcoustIDConfig) -> dict:
         "acoustid_score": acoustid_score,
         "acoustid_match": True,
         "mb_recording_id": mb_recording_id,
+        "mb_release_group_id": mb_release_group_id,
         "mb_release_group_type": mb_release_group_type,
         **mb_fields,
     }
@@ -299,10 +304,11 @@ def _fetch_mb_recording(mb_recording_id: str, config: AcoustIDConfig) -> dict:
     # Label / catalogue number — optional second MB call
     label = None
     catalogue_number = None
+    mb_has_front_art = None
     if config.fetch_label and mb_release_id:
         if config.mb_rate_limit:
             time.sleep(1)
-        label, catalogue_number, release_status_from_lookup, year_from_lookup = (
+        label, catalogue_number, release_status_from_lookup, year_from_lookup, mb_has_front_art = (
             _fetch_release_label(mb_release_id)
         )
         # Prefer release lookup values — they are more reliably populated than
@@ -326,6 +332,7 @@ def _fetch_mb_recording(mb_recording_id: str, config: AcoustIDConfig) -> dict:
         "release_country": release_country,
         "label": label,
         "catalogue_number": catalogue_number,
+        "mb_has_front_art": mb_has_front_art,
         "genres": genres,
         "tags": tags,
     }
@@ -333,24 +340,30 @@ def _fetch_mb_recording(mb_recording_id: str, config: AcoustIDConfig) -> dict:
 
 def _fetch_release_label(
     mb_release_id: str,
-) -> tuple[str | None, str | None, str | None, int | None]:
+) -> tuple[str | None, str | None, str | None, int | None, bool | None]:
     """
-    Fetch label, catalogue number, release status, and year from a MusicBrainz release.
-    Returns (None, None, None, None) on any failure.
+    Fetch label, catalogue number, release status, year, and cover art flag
+    from a MusicBrainz release.
+    Returns (None, None, None, None, None) on any failure.
 
-    Key names confirmed from musicbrainzngs mbxml.py parser:
-    - "label-info-list" (not "label-info")
+    Uses a raw JSON request rather than musicbrainzngs for this call because
+    musicbrainzngs 0.7.1 does not include "cover-art-archive" in its validated
+    includes list, even though the MB API supports it.
+
+    Key names from the MB JSON API:
+    - "label-info" array (JSON) vs "label-info-list" (musicbrainzngs XML)
     - "catalog-number" (American spelling)
-    - "status" and "date" are top-level fields on the release
+    - "cover-art-archive.front" is a boolean
     """
+    url = f"https://musicbrainz.org/ws/2/release/{mb_release_id}"
+    params = {"inc": "labels", "fmt": "json"}
+    headers = {"User-Agent": musicbrainzngs.musicbrainz._useragent}
     try:
-        release_result = musicbrainzngs.get_release_by_id(
-            mb_release_id,
-            includes=["labels"],
-        )
-        release = release_result["release"]
+        resp = requests.get(url, params=params, headers=headers, timeout=10)
+        resp.raise_for_status()
+        release = resp.json()
 
-        label_info = release.get("label-info-list", [])
+        label_info = release.get("label-info", [])
         if label_info:
             label = label_info[0].get("label", {}).get("name")
             catalogue_number = label_info[0].get("catalog-number")
@@ -363,7 +376,11 @@ def _fetch_release_label(
         date = release.get("date", "")
         year = int(date[:4]) if date and len(date) >= 4 else None
 
-        return label, catalogue_number, status, year
+        caa = release.get("cover-art-archive", {})
+        front = caa.get("front")
+        mb_has_front_art = bool(front) if front is not None else None
+
+        return label, catalogue_number, status, year, mb_has_front_art
     except Exception as exc:  # noqa: BLE001
         logger.warning("Release label lookup failed for %s: %s", mb_release_id, exc)
-        return None, None, None, None
+        return None, None, None, None, None
