@@ -48,6 +48,10 @@ crate.db-shm
 # Set MUSIC_FOLDER in .env to point to your local library.
 music/
 
+# Audio files — large binaries, never commit individual tracks.
+*.wav
+*.mp3
+
 # Essentia ML model files — large binary files downloaded separately.
 # See docs/ for how to download them.
 *.pb
