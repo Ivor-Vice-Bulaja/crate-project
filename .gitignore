@@ -92,3 +92,6 @@ desktop.ini
 *.orig
 *.log
 logs/
+
+# Test output files
+scripts/output/

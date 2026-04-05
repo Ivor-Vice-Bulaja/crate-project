@@ -182,6 +182,59 @@ def print_discogs_summary(discogs_results: list[dict]) -> None:
     print(f"  Has styles              {has_styles:>4}  {pct(has_styles, n)}")
 
 
+def print_essentia_summary(essentia_results: list[dict]) -> None:
+    n = len(essentia_results)
+    errors = sum(1 for r in essentia_results if r.get("analysis_error"))
+
+    print(f"\n  Essentia  — {n} tracks")
+    print(f"  {'─' * 40}")
+    print(f"  Errors                  {errors:>4}  {pct(errors, n)}")
+
+    for label, field in [
+        ("BPM",                "bpm"),
+        ("BPM confidence",     "bpm_confidence"),
+        ("key",                "key"),
+        ("key strength",       "key_strength"),
+        ("integrated loudness","integrated_loudness"),
+        ("loudness range",     "loudness_range"),
+        ("dynamic complexity", "dynamic_complexity"),
+        ("spectral centroid",  "spectral_centroid_hz"),
+        ("sub-bass ratio",     "sub_bass_ratio"),
+        ("high-freq ratio",    "high_freq_ratio"),
+        ("MFCC mean",          "mfcc_mean"),
+        ("bark bands",         "bark_bands_mean"),
+        ("onset rate",         "onset_rate"),
+        ("danceability",       "danceability"),
+        ("tuning freq",        "tuning_frequency_hz"),
+        ("pitch frames",       "pitch_frames"),
+        ("beat ticks",         "beat_ticks"),
+        ("genre labels (ML)",  "genre_top_labels"),
+        ("embedding (ML)",     "embedding"),
+    ]:
+        filled, total = field_fill_rate(essentia_results, field)
+        print(f"  {label:<25} {filled:>4}  {pct(filled, total)}")
+
+    # BPM stats
+    bpms = [r["bpm"] for r in essentia_results if r.get("bpm") is not None]
+    if bpms:
+        print(f"\n  BPM range: min={min(bpms):.1f}  max={max(bpms):.1f}  avg={sum(bpms)/len(bpms):.1f}")
+
+    # Key distribution
+    keys: dict[str, int] = {}
+    for r in essentia_results:
+        if r.get("key") and r.get("key_scale"):
+            k = f"{r['key']} {r['key_scale']}"
+            keys[k] = keys.get(k, 0) + 1
+    if keys:
+        top_keys = sorted(keys.items(), key=lambda x: -x[1])[:6]
+        print(f"  Keys (top 6): {dict(top_keys)}")
+
+    # Loudness stats
+    loudness = [r["integrated_loudness"] for r in essentia_results if r.get("integrated_loudness") is not None]
+    if loudness:
+        print(f"  Loudness (LUFS): min={min(loudness):.1f}  max={max(loudness):.1f}  avg={sum(loudness)/len(loudness):.1f}")
+
+
 def print_cover_art_summary(art_results: list[dict]) -> None:
     n = len(art_results)
     errors = sum(1 for r in art_results if r.get("cover_art_error"))
@@ -236,6 +289,27 @@ def main() -> None:
         action="store_true",
         help="Disable MusicBrainz 1s rate limit (use with caution)",
     )
+    parser.add_argument(
+        "--essentia",
+        action="store_true",
+        help="Enable Essentia audio analysis (slow: ~30s/track; WSL/Linux only)",
+    )
+    parser.add_argument(
+        "--essentia-count",
+        type=int,
+        default=10,
+        help="Number of tracks to run Essentia on (default: 10; independent of --count)",
+    )
+    parser.add_argument(
+        "--essentia-ml",
+        action="store_true",
+        help="Enable Essentia ML models (requires model files in ./models/)",
+    )
+    parser.add_argument(
+        "--no-pitch",
+        action="store_true",
+        help="Disable PredominantPitchMelodia in Essentia (saves ~10–30s/track)",
+    )
     args = parser.parse_args()
 
     folder = Path(args.folder)
@@ -249,12 +323,15 @@ def main() -> None:
         sys.exit(1)
 
     n = len(tracks)
+    essentia_count = min(args.essentia_count, len(tracks)) if args.essentia else 0
+
     print(f"\nCrate importer test — {n} tracks from {folder.name}")
     print(f"{'=' * 60}")
-    print(f"  mutagen:    always")
-    print(f"  acoustid:   {'SKIP' if args.no_acoustid else 'enabled (rate-limited)'}")
-    print(f"  discogs:    {'SKIP' if args.no_discogs else 'enabled'}")
-    print(f"  cover_art:  {'SKIP' if args.no_cover_art else 'enabled'}")
+    print(f"  mutagen:    always ({n} tracks)")
+    print(f"  acoustid:   {'SKIP' if args.no_acoustid else f'enabled (rate-limited) ({n} tracks)'}")
+    print(f"  discogs:    {'SKIP' if args.no_discogs else f'enabled ({n} tracks)'}")
+    print(f"  cover_art:  {'SKIP' if args.no_cover_art else f'enabled ({n} tracks)'}")
+    print(f"  essentia:   {'enabled (no ML, no pitch)' if args.essentia and not args.essentia_ml and args.no_pitch else 'enabled (no ML)' if args.essentia and not args.essentia_ml else 'enabled (full)' if args.essentia else 'SKIP'}{f' ({essentia_count} tracks)' if args.essentia else ''}")
     print()
 
     # --- Lazy imports (only import what we'll use) ---
@@ -302,12 +379,28 @@ def main() -> None:
             print(f"  WARNING: could not load cover_art module: {exc}")
             print("  Skipping cover art.\n")
 
+    essentia_fn = None
+    essentia_config = None
+    if args.essentia:
+        try:
+            from backend.importer.essentia_analysis import analyse_track
+            from backend.config import EssentiaConfig
+            essentia_config = EssentiaConfig(
+                run_ml_models=args.essentia_ml,
+                run_pitch_analysis=not args.no_pitch,
+            )
+            essentia_fn = analyse_track
+        except Exception as exc:
+            print(f"  WARNING: could not load essentia module: {exc}")
+            print("  Skipping Essentia.\n")
+
     # --- Run importers ---
     all_results: list[dict] = []
     tag_results: list[dict] = []
     acoustid_results: list[dict] = []
     discogs_results: list[dict] = []
     art_results: list[dict] = []
+    essentia_results: list[dict] = []
 
     t_start = time.time()
 
@@ -368,6 +461,14 @@ def main() -> None:
         else:
             row["cover_art"] = None
 
+        # 5. Essentia — only for the first essentia_count tracks
+        if essentia_fn and essentia_config and i <= essentia_count:
+            ess = essentia_fn(str(track_path), essentia_config)
+            row["essentia"] = ess
+            essentia_results.append(ess)
+        else:
+            row["essentia"] = None
+
         all_results.append(row)
 
     elapsed = time.time() - t_start
@@ -397,6 +498,11 @@ def main() -> None:
         print_cover_art_summary(art_results)
     else:
         print("\n  Cover Art Archive  — skipped")
+
+    if essentia_results:
+        print_essentia_summary(essentia_results)
+    else:
+        print("\n  Essentia  — skipped")
 
     print()
 
