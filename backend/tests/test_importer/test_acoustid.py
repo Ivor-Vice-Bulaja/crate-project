@@ -11,11 +11,19 @@ Test structure mirrors the Test Plan in md/plans/acoustid-lookup.md:
   - Rate limit test
 """
 
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import acoustid as acoustid_lib
 import musicbrainzngs
 import pytest
+
+
+def _mock_release_response(data: dict) -> MagicMock:
+    """Build a mock requests.Response whose .json() returns data."""
+    resp = MagicMock()
+    resp.json.return_value = data
+    resp.raise_for_status.return_value = None
+    return resp
 
 from backend.config import AcoustIDConfig
 from backend.importer.acoustid import identify_track
@@ -40,9 +48,11 @@ ALL_KEYS = [
     "mb_release_title",
     "release_status",
     "release_country",
+    "mb_release_group_id",
     "mb_release_group_type",
     "label",
     "catalogue_number",
+    "mb_has_front_art",
     "genres",
     "tags",
 ]
@@ -132,19 +142,18 @@ def mb_recording_response():
 
 @pytest.fixture
 def mb_release_response():
-    """Minimal musicbrainzngs get_release_by_id response with label info."""
+    """Minimal MB JSON API release response with label info and cover-art-archive."""
     return {
-        "release": {
-            "id": "release-uuid-001",
-            "status": "Official",
-            "date": "2020-06-15",
-            "label-info-list": [
-                {
-                    "label": {"name": "Test Records"},
-                    "catalog-number": "TEST-001",
-                }
-            ],
-        }
+        "id": "release-uuid-001",
+        "status": "Official",
+        "date": "2020-06-15",
+        "label-info": [
+            {
+                "label": {"name": "Test Records"},
+                "catalog-number": "TEST-001",
+            }
+        ],
+        "cover-art-archive": {"front": True, "back": False, "artwork": True, "count": 1},
     }
 
 
@@ -168,8 +177,8 @@ def _patch_full_success(
             return_value=mb_recording_response,
         ),
         patch(
-            "backend.importer.acoustid.musicbrainzngs.get_release_by_id",
-            return_value=mb_release_response,
+            "backend.importer.acoustid.requests.get",
+            return_value=_mock_release_response(mb_release_response),
         ),
         patch("backend.importer.acoustid.musicbrainzngs.set_useragent"),
     )
@@ -196,8 +205,8 @@ class TestCoreAssertions:
                 return_value=mb_recording_response,
             ),
             patch(
-                "backend.importer.acoustid.musicbrainzngs.get_release_by_id",
-                return_value=mb_release_response,
+                "backend.importer.acoustid.requests.get",
+                return_value=_mock_release_response(mb_release_response),
             ),
             patch("backend.importer.acoustid.musicbrainzngs.set_useragent"),
         ):
@@ -219,8 +228,8 @@ class TestCoreAssertions:
                 return_value=mb_recording_response,
             ),
             patch(
-                "backend.importer.acoustid.musicbrainzngs.get_release_by_id",
-                return_value=mb_release_response,
+                "backend.importer.acoustid.requests.get",
+                return_value=_mock_release_response(mb_release_response),
             ),
             patch("backend.importer.acoustid.musicbrainzngs.set_useragent"),
         ):
@@ -252,8 +261,8 @@ class TestCoreAssertions:
                 return_value=mb_recording_response,
             ),
             patch(
-                "backend.importer.acoustid.musicbrainzngs.get_release_by_id",
-                return_value=mb_release_response,
+                "backend.importer.acoustid.requests.get",
+                return_value=_mock_release_response(mb_release_response),
             ),
             patch("backend.importer.acoustid.musicbrainzngs.set_useragent"),
         ):
@@ -321,8 +330,8 @@ class TestSuccessPath:
                 return_value=mb_recording_response,
             ),
             patch(
-                "backend.importer.acoustid.musicbrainzngs.get_release_by_id",
-                return_value=mb_release_response,
+                "backend.importer.acoustid.requests.get",
+                return_value=_mock_release_response(mb_release_response),
             ),
             patch("backend.importer.acoustid.musicbrainzngs.set_useragent"),
         ):
@@ -394,7 +403,7 @@ class TestSuccessPath:
                 "backend.importer.acoustid.musicbrainzngs.get_recording_by_id",
                 return_value=mb_recording_response,
             ),
-            patch("backend.importer.acoustid.musicbrainzngs.get_release_by_id") as mock_release,
+            patch("backend.importer.acoustid.requests.get") as mock_release,
             patch("backend.importer.acoustid.musicbrainzngs.set_useragent"),
         ):
             result = identify_track("/fake/track.mp3", config_no_label)
@@ -421,8 +430,8 @@ class TestSuccessPath:
                 return_value=mb_recording_response,
             ),
             patch(
-                "backend.importer.acoustid.musicbrainzngs.get_release_by_id",
-                return_value=mb_release_response,
+                "backend.importer.acoustid.requests.get",
+                return_value=_mock_release_response(mb_release_response),
             ),
             patch("backend.importer.acoustid.musicbrainzngs.set_useragent"),
             patch("backend.importer.acoustid.time.sleep") as mock_sleep,
@@ -491,7 +500,7 @@ class TestNoMatchAndPartialFailure:
                 return_value=mb_recording_response,
             ),
             patch(
-                "backend.importer.acoustid.musicbrainzngs.get_release_by_id",
+                "backend.importer.acoustid.requests.get",
                 side_effect=Exception("connection timeout"),
             ),
             patch("backend.importer.acoustid.musicbrainzngs.set_useragent"),
@@ -549,8 +558,8 @@ class TestFailurePaths:
                 return_value=mb_recording_response,
             ),
             patch(
-                "backend.importer.acoustid.musicbrainzngs.get_release_by_id",
-                return_value=mb_release_response,
+                "backend.importer.acoustid.requests.get",
+                return_value=_mock_release_response(mb_release_response),
             ),
             patch("backend.importer.acoustid.musicbrainzngs.set_useragent"),
             patch("backend.importer.acoustid.time.sleep"),
@@ -610,8 +619,8 @@ class TestRateLimit:
                 return_value=mb_recording_response,
             ),
             patch(
-                "backend.importer.acoustid.musicbrainzngs.get_release_by_id",
-                return_value=mb_release_response,
+                "backend.importer.acoustid.requests.get",
+                return_value=_mock_release_response(mb_release_response),
             ),
             patch("backend.importer.acoustid.musicbrainzngs.set_useragent"),
             patch("backend.importer.acoustid.time.sleep") as mock_sleep,
@@ -638,8 +647,8 @@ class TestRateLimit:
                 return_value=mb_recording_response,
             ),
             patch(
-                "backend.importer.acoustid.musicbrainzngs.get_release_by_id",
-                return_value=mb_release_response,
+                "backend.importer.acoustid.requests.get",
+                return_value=_mock_release_response(mb_release_response),
             ),
             patch("backend.importer.acoustid.musicbrainzngs.set_useragent"),
             patch("backend.importer.acoustid.time.sleep") as mock_sleep,
