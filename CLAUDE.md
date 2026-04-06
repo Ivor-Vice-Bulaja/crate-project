@@ -171,6 +171,21 @@ library — to be validated in Phase 2.
 *To be researched. Expected: label, catalogue number, release year, genre,
 style tags. Coverage for electronic music TBD.*
 
+### iTunes Search API (Apple Music)
+*To be researched. Expected: track title, artist, album, release year, genre,
+artwork URL, preview URL, explicit flag, iTunes track ID. Free, no auth required.
+Coverage for electronic music TBD — likely weaker than Discogs for niche labels.*
+
+### Last.fm
+*To be researched. Expected: scrobble count, listener count, tags,
+similar artists, top tags for a track. Useful for popularity signals and
+genre/mood enrichment from community tagging. Requires Last.fm API key.*
+
+### Deezer
+*To be researched. Expected: BPM, release year, label, genre, explicit flag,
+track preview URL, album cover art. Coverage for electronic music TBD.
+Free API, no auth required for basic lookups.*
+
 ### Essentia (audio analysis)
 Researched 2026-04-02. Full reference: `docs/research/essentia.md`.
 
@@ -412,6 +427,9 @@ LOG_LEVEL=INFO
 - [ ] Research AcoustID API — exact outputs, rate limits, match rate
 - [ ] Research MusicBrainz API — exact outputs, field reliability
 - [ ] Research Discogs API — exact outputs, coverage for electronic music
+- [ ] Research iTunes Search API — exact outputs, coverage for electronic music
+- [ ] Research Last.fm API — scrobble data, tag schema, rate limits
+- [ ] Research Deezer API — exact outputs, coverage for electronic music
 - [ ] Research file tags (mutagen) — what fields exist and reliability on DJ files
 - [ ] Map all source outputs side by side into a single field inventory
 - [ ] Finalise database schema based on confirmed outputs

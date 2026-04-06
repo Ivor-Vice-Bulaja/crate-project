@@ -436,6 +436,7 @@ def main() -> None:
             disc = discogs_fn(
                 artist=artist,
                 title=title,
+                label=tags.get("tag_label"),
                 catno=catno,
                 barcode=None,
                 year=year,

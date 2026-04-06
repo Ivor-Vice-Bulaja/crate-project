@@ -112,6 +112,7 @@ def main():
     )
     parser.add_argument("--artist", default=None, help="Artist name")
     parser.add_argument("--title", default=None, help="Track or release title")
+    parser.add_argument("--label", default=None, help="Label name (from file tags)")
     parser.add_argument("--catno", default=None, help="Catalogue number")
     parser.add_argument("--barcode", default=None, help="Barcode")
     parser.add_argument("--year", type=int, default=None, help="Release year")
@@ -133,7 +134,7 @@ def main():
     )
     args = parser.parse_args()
 
-    if not any([args.artist, args.title, args.catno, args.barcode]):
+    if not any([args.artist, args.title, args.label, args.catno, args.barcode]):
         parser.error("Provide at least one of: --artist, --title, --catno, --barcode")
 
     import discogs_client
@@ -157,6 +158,7 @@ def main():
     print(f"\nSearching Discogs for:")
     print(f"  artist:  {args.artist or '—'}")
     print(f"  title:   {args.title or '—'}")
+    print(f"  label:   {args.label or '—'}")
     print(f"  catno:   {args.catno or '—'}")
     print(f"  barcode: {args.barcode or '—'}")
     print(f"  year:    {args.year or '—'}")
@@ -169,6 +171,7 @@ def main():
     result = fetch_discogs_metadata(
         artist=args.artist,
         title=args.title,
+        label=args.label,
         catno=args.catno,
         barcode=args.barcode,
         year=args.year,
