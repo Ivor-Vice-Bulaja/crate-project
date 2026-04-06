@@ -39,7 +39,7 @@ dependencies = [
 analysis = [
     "essentia>=2.1b6.dev1177",
     "essentia-tensorflow>=2.1b6.dev1177",
-    "numpy>=1.26.0",
+    "numpy>=1.26.0,<2",  # essentia uses numpy.core which was removed in NumPy 2.x
 ]
 
 # Development tools — linters, formatters, test framework.

@@ -711,7 +711,7 @@ def fetch_discogs_metadata(
                 "discogs: no results for artist=%s title=%s catno=%s barcode=%s",
                 artist, title, catno, barcode,
             )
-            return _no_match_dict("none")
+            return _no_match_dict(strategy)
 
         # --- Candidate selection ---
         best_result, best_score = _select_best_candidate(results, artist, catno, year)
