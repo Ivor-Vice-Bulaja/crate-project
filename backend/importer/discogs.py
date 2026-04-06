@@ -303,7 +303,7 @@ def _search_artist_title(
         results = list(
             client.search(
                 artist=artist,
-                release_title=title,
+                track=title,
                 type="release",
                 format="Vinyl",
                 per_page=per_page,
@@ -314,7 +314,7 @@ def _search_artist_title(
 
     # Retry without format filter
     return list(
-        client.search(artist=artist, release_title=title, type="release", per_page=per_page)
+        client.search(artist=artist, track=title, type="release", per_page=per_page)
     )
 
 
@@ -324,14 +324,14 @@ def _search_label_title(
     title: str,
     config: DiscogsConfig,
 ) -> list:
-    """Search by label name + release title. Vinyl-filtered first if enabled."""
+    """Search by label name + track title. Vinyl-filtered first if enabled."""
     per_page = min(config.max_search_results, 10)
 
     if config.vinyl_filter_first:
         results = list(
             client.search(
                 label=label,
-                release_title=title,
+                track=title,
                 type="release",
                 format="Vinyl",
                 per_page=per_page,
@@ -341,7 +341,7 @@ def _search_label_title(
             return results
 
     return list(
-        client.search(label=label, release_title=title, type="release", per_page=per_page)
+        client.search(label=label, track=title, type="release", per_page=per_page)
     )
 
 

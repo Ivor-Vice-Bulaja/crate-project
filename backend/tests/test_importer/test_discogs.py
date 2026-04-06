@@ -608,7 +608,7 @@ def test_label_title_strategy_fires_when_catno_and_barcode_fail(config, mock_sea
 
     def search_side_effect(**kwargs):
         search_calls.append(kwargs)
-        if "label" in kwargs and "release_title" in kwargs:
+        if "label" in kwargs and "track" in kwargs:
             return [mock_search_result]
         return []
 
