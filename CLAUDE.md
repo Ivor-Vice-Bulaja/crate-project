@@ -172,9 +172,52 @@ library — to be validated in Phase 2.
 style tags. Coverage for electronic music TBD.*
 
 ### iTunes Search API (Apple Music)
-*To be researched. Expected: track title, artist, album, release year, genre,
-artwork URL, preview URL, explicit flag, iTunes track ID. Free, no auth required.
-Coverage for electronic music TBD — likely weaker than Discogs for niche labels.*
+Researched 2026-04-11. Full reference: `docs/research/itunes.md`.
+
+Key facts:
+- No authentication required. Legacy API (frozen ~2017), still live.
+- No ISRC field — not exposed anywhere in search or lookup. ISRC must come from MusicBrainz.
+- No label field — `copyright` string exists on collection results but is unstructured.
+- `primaryGenreName` is too coarse for Crate — "Dance", "Electronic", "Trance" only; cannot distinguish techno from house.
+- `artworkUrl100` — URL template; substitute dimensions in path (e.g. `600x600bb.jpg`) to get larger sizes. **Main unique value-add over MusicBrainz.**
+- Rate limit: ~20 req/min per IP; returns HTTP 403 when exceeded.
+- Coverage: ~30–50% match for a typical techno/house library. Present: major-label electronic back to early 1990s. Absent: white labels, promos, vinyl rips, non-digitally-distributed releases.
+
+**Confirmed fields returned for a music track result:**
+```
+wrapperType          →  string — always "track"
+kind                 →  string — always "song" for audio tracks
+trackId              →  integer — iTunes Store track ID; stable while listing exists
+artistId             →  integer — iTunes artist ID
+collectionId         →  integer — iTunes album/collection ID
+trackName            →  string — track title as listed on iTunes
+artistName           →  string — artist name as listed on iTunes
+collectionName       →  string — album/collection name
+trackCensoredName    →  string — censored version; same as trackName if not explicit
+collectionCensoredName → string
+artistViewUrl        →  string — iTunes Store artist page URL
+collectionViewUrl    →  string — iTunes Store album page URL
+trackViewUrl         →  string — iTunes Store track page URL
+previewUrl           →  string — 30-second MP3 preview URL (sometimes absent)
+artworkUrl30         →  string — 30×30 artwork URL
+artworkUrl60         →  string — 60×60 artwork URL
+artworkUrl100        →  string — 100×100 artwork URL; resize by editing path dimensions
+collectionPrice      →  float — album price in currency of `country`
+trackPrice           →  float — track price
+releaseDate          →  string — ISO 8601 e.g. "2005-01-01T00:00:00Z"; UTC; day precision only
+collectionExplicitness → string — "explicit", "cleaned", or "notExplicit"
+trackExplicitness    →  string — same values
+discCount            →  integer — number of discs in the release
+discNumber           →  integer — disc number of this track
+trackCount           →  integer — total tracks on the release
+trackNumber          →  integer — track number on the release
+trackTimeMillis      →  integer — track duration in MILLISECONDS
+country              →  string — ISO 3166-1 alpha-2 country code of the store queried
+currency             →  string — ISO 4217 currency code
+primaryGenreName     →  string — top-level genre only; insufficient for techno/house distinction
+isStreamable         →  boolean — whether track is available on Apple Music streaming
+```
+No ISRC, no label, no catalogue number, no BPM, no key — all must come from other sources.
 
 ### Last.fm
 *To be researched. Expected: scrobble count, listener count, tags,
@@ -223,6 +266,7 @@ Configuration notes:
 Thread safety: not fully thread-safe; max 2 workers; algorithm instances must not be shared across threads.
 
 Windows: Python bindings do not work on native Windows. Use WSL2 or Linux Docker.
+WSL2 confirmed working on dev machine (2026-04-11). Run all Essentia scripts via `wsl -e bash -c "..."` from the project root. Install with `~/.local/bin/uv sync --extra analysis`.
 
 ---
 
