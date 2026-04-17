@@ -39,6 +39,7 @@ into improving future fills.
 | Track identification | AcoustID + pyacoustid | Free, fingerprint-based |
 | Metadata lookup | MusicBrainz (musicbrainzngs) | Artist, label, year, catalogue |
 | Metadata lookup 2 | Discogs API | Strong for electronic music |
+| Metadata lookup 3 | iTunes Search API | Artwork URLs, release dates; no auth; 84% match on house library |
 | Database | SQLite + sqlite-vec extension | Local, no server, vector search built in |
 | Embeddings | sentence-transformers | Local, free, CPU-only is fine |
 | AI — crate fill | Claude API (claude-sonnet-4-20250514) | Via Anthropic API |
@@ -75,6 +76,7 @@ into improving future fills.
 - Claude API for crate fill, next track, description refinement
 - AcoustID + MusicBrainz for track identification
 - Discogs for label/catalogue enrichment
+- iTunes Search API for artwork URLs and release dates (no auth; 84% match validated on house library)
 - uv for Python package management
 - Ruff for linting and formatting
 - pytest for testing
@@ -467,26 +469,33 @@ LOG_LEVEL=INFO
 - [x] .env.example, .gitignore, README.md
 
 **Phase 1 — Research and data mapping (current)**
-- [ ] Research Essentia — algorithms, ML models, outputs (tasks/research-essentia.md)
-- [ ] Research AcoustID API — exact outputs, rate limits, match rate
-- [ ] Research MusicBrainz API — exact outputs, field reliability
+- [x] Research Essentia — algorithms, ML models, outputs (`docs/research/essentia.md`)
+- [x] Research AcoustID API — exact outputs, rate limits, match rate (`docs/research/acoustid.md`)
+- [x] Research MusicBrainz API — exact outputs, field reliability (`docs/research/acoustid.md`)
+- [x] Research file tags (mutagen) — what fields exist and reliability on DJ files
+- [x] Research iTunes Search API — exact outputs, coverage for electronic music (`docs/research/itunes.md`)
 - [ ] Research Discogs API — exact outputs, coverage for electronic music
-- [ ] Research iTunes Search API — exact outputs, coverage for electronic music
 - [ ] Research Last.fm API — scrobble data, tag schema, rate limits
 - [ ] Research Deezer API — exact outputs, coverage for electronic music
-- [ ] Research file tags (mutagen) — what fields exist and reliability on DJ files
 - [ ] Map all source outputs side by side into a single field inventory
 - [ ] Finalise database schema based on confirmed outputs
 - [ ] Validate Essentia on 50 real tracks — calibrate derived score formulas
 
+**Phase 1.5 — Importer implementations (ahead of schema — done as research outputs)**
+- [x] mutagen tag reader (`backend/importer/tags.py`) — validated on 50 real tracks
+- [x] AcoustID + MusicBrainz importer (`backend/importer/acoustid.py`) — 36% match on house library
+- [x] Discogs importer (`backend/importer/discogs.py`) — 64% match; label+title strategy most effective
+- [x] Cover Art Archive importer (`backend/importer/cover_art.py`) — 18% match (gated on AcoustID)
+- [x] iTunes importer (`backend/importer/itunes.py`) — 84% match; best single source for this library type
+- [x] Batch test script (`scripts/test_importers.py`) — runs all 5 importers on N tracks with summary report
+- [x] Real-data validation — 50 tracks from JUN2025 HOUSE TRANCY (2026-04-17); zero importer errors
+
 **Phase 2 — Import pipeline**
-- [ ] mutagen tag reading
-- [ ] AcoustID fingerprinting + lookup
-- [ ] MusicBrainz metadata fetch
-- [ ] Discogs enrichment
-- [ ] Essentia audio analysis
-- [ ] Derived score computation (formulas confirmed in Phase 1)
-- [ ] SQLite write with INSERT OR REPLACE
+- [ ] Pipeline orchestration (`backend/importer/pipeline.py`) — tie all importers together
+- [ ] SQLite schema + write with INSERT OR REPLACE (`backend/database.py`)
+- [ ] Essentia audio analysis (WSL2 only; `backend/importer/essentia_analysis.py` exists)
+- [ ] Derived score computation (formulas TBC after Essentia validation on 50 tracks)
+- [ ] Embeddings (`backend/importer/embeddings.py`)
 
 **Phase 3 — Backend API**
 - [ ] FastAPI setup

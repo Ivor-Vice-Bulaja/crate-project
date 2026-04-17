@@ -7,58 +7,79 @@
 ## Status
 
 Status: in progress
-Current phase: Phase 1 — research and data mapping
-Last session: 2026-04-05
+Current phase: Phase 1 — research and data mapping / Phase 1.5 — importer implementations
+Last session: 2026-04-17
 
 ## What was done
 
-- Implemented all four importers: tags.py, acoustid.py, discogs.py, cover_art.py
-- Wrote test script: scripts/test_importers.py — runs all importers on N tracks, prints summary
-- Tested all importers on 50 real tracks from SEP2025 folder (WSL2, fpcalc available)
-- Documented findings in docs/research/ for all four sources
-- Fixed bug in discogs.py: strategy was always reported as "none" on no-match
-- Installed Python 3.11 in WSL2 via uv; WSL venv lives at .venv/bin/python
+**Session 2026-04-17**
+- Added iTunes importer to test_importers.py (it was missing despite the importer existing)
+- Ran full batch test: all 5 importers on 50 tracks from JUN2025 - HOUSE TRANCY
+- Results saved to scripts/output/importers_test_20260411T092838.json
+- Updated CLAUDE.md and CURRENT_STATE.md to reflect current project state
 
-## Real-data findings (50 techno/house tracks)
+**Prior sessions (to 2026-04-11)**
+- Researched and implemented all 5 importers: tags.py, acoustid.py, discogs.py, cover_art.py, itunes.py
+- Wrote test harness: scripts/test_importers.py
+- Researched: Essentia, AcoustID/MusicBrainz, mutagen, iTunes Search API
+- Installed Python 3.12 in WSL2 via uv; WSL venv at .venv/bin/python
+- Fixed numpy<2 constraint for Essentia compatibility
 
-**mutagen:** Zero errors. 100% coverage on title, artist, album, label, genre, BPM,
-key, embedded art. Year 50%. Catalogue number 0% (Beatport does not write TXXX:CATALOGNUMBER).
+## Real-data findings — 50 tracks from JUN2025 HOUSE TRANCY (2026-04-17)
 
-**AcoustID + MusicBrainz:** 14% match rate. 86% no-match — mostly 2024–2025 releases
-from small labels not yet in AcoustID/MusicBrainz. When it matches, data is clean.
-One false match observed (fingerprint collision). Requires fpcalc — WSL2 only.
+Zero errors from any importer across all 50 tracks.
 
-**Discogs:** 12% match rate, all driven by catno from AcoustID/MB. Artist+title searches
-return 0 results for niche techno releases. Styles field ("Deep Techno", "Dub Techno", etc.)
-is the valuable output when matches occur.
+**mutagen:** 100% title, artist, album, label, genre. 96% BPM/key. 90% year. 98% embedded art.
+0% catalogue number (not tagged by source). All MP3. No DJ software tags.
 
-**Cover Art Archive:** 12% match (exactly tracks AcoustID hits). Zero errors.
-Release-level art found for all matched tracks. Embedded art (100% from tags) is
-the primary display source; CAA is a higher-res supplement.
+**iTunes (84% high-confidence):** Best single source. 86% artwork URL, release date, genre fill.
+Genres too coarse ("Electronic"/"House"/"Dance") — confirmed useless for crate logic.
+7/50 no-match: Gestalt/Glow Mid promo releases not on iTunes.
 
-**Essentia (WSL2, 10 tracks, no ML, no pitch):** Zero errors. 100% on all core algorithm
-outputs: BPM (avg 137.4, range 123.8–144.3), key, loudness (avg -8.6 LUFS), spectral
-centroid, sub-bass ratio, high-freq ratio, MFCC, bark bands, onsets, danceability, tuning.
-~14s/track reading from NTFS via /mnt/c/. ML outputs all None (no model files yet).
-Fixed: `numpy<2` constraint added to pyproject.toml (essentia uses removed numpy.core API).
+**Discogs (64% high-confidence):** label+title strategy is the workhorse (22/32 matches).
+Does not require AcoustID — works from filename-parsed artist/title and tag_label.
+64% fill on label, catno, genres, styles. Known data issue: GS027 catno attributed to
+"Goldmine Soul Supply" instead of "Gestalt Records" in Discogs.
+
+**AcoustID + MusicBrainz (36% match):** Confirms research estimate for indie/house library.
+Of 18 fingerprint matches, 12 had full MB recording data. Avg AcoustID score 0.837.
+AcoustID/MB is a bonus where available, not a primary source for this library type.
+
+**Cover Art Archive (18%):** Gated on AcoustID. Of 12 tracks with MB recording IDs,
+9 had CAA art (75%). Low overall rate is a consequence of AcoustID miss rate.
+
+## Importer priority order (confirmed from real data)
+
+For title/artist/artwork/date: iTunes → MusicBrainz → tags → filename
+For label/catno/styles: Discogs → MusicBrainz → tags
+For fingerprint identity: AcoustID → (no fallback)
+For cover art: embedded tags → CAA (release) → CAA (release-group) → iTunes artwork URL
 
 ## Next action
 
 Phase 1 research remaining:
-- [ ] Map all source outputs into a single field inventory (side-by-side comparison)
-- [ ] Finalise database schema based on confirmed field inventory
-- [ ] Download Essentia ML model files and re-run to validate ML outputs
-- [ ] Consider adding label+title Discogs search strategy (tag_label is 100%; would
-      improve Discogs match rate for tracks where AcoustID fails)
+- [ ] Research Discogs API formally — document exact field outputs in docs/research/discogs.md
+- [ ] Research Last.fm API — scrobble data, tag schema, rate limits
+- [ ] Research Deezer API — BPM, label, coverage for electronic music
+- [ ] Map all confirmed source outputs into a single field inventory (side-by-side)
+- [ ] Finalise database schema from field inventory
+
+Phase 1.5 remaining:
+- [ ] Validate Essentia on 50 real tracks (WSL2) — calibrate BPM, key, loudness, derived scores
+  - Run: `wsl -e bash -c "cd /mnt/c/Users/Gamer/code/crate-project && .venv/bin/python scripts/test_importers.py --folder '/mnt/c/Users/Gamer/Desktop/Desktop Temp/JUN2025 - HOUSE TRANCY' --count 10 --no-acoustid --no-discogs --no-cover-art --no-itunes --essentia"`
+  - ML models not yet downloaded — run without --essentia-ml first
 
 ## Open questions
 
-- Should the importer add a label+title Discogs search step using tag_label?
-  Currently catno from AcoustID is the only path to Discogs for this library type.
-- How to handle AcoustID false matches? Artist name similarity check between
-  tag_artist and MB artist would catch the case observed (Psychedelic Rock collision).
+- Should the pipeline use iTunes artist/title as the canonical display name when MB is absent?
+  (84% match rate makes it the most reliable source for this library type)
+- How to handle the Discogs catno mislabelling issue (GS027 = Goldmine Soul Supply vs Gestalt)?
+  Probably not worth solving — it's a Discogs data quality problem, not a code problem.
+- False match detection for AcoustID: artist name similarity check between tag_artist and
+  MB artist would catch fingerprint collisions (Psychedelic Rock collision observed in prior session).
 
 ## Blockers
 
-- Essentia ML models not yet downloaded (model files needed in ./models/).
-- Running importers on Windows requires WSL2 (fpcalc + essentia are Linux-only).
+- Essentia ML models not yet downloaded (needed in ./models/ for genre/mood outputs).
+- All Essentia and AcoustID work requires WSL2 (fpcalc + essentia are Linux-only).
+  Run command prefix: `wsl -e bash -c "cd /mnt/c/Users/Gamer/code/crate-project && ..."`
