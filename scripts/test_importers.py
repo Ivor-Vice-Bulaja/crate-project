@@ -13,6 +13,7 @@ Importers tested:
   2. acoustid — AcoustID fingerprinting + MusicBrainz metadata (network, slow ~2s/track)
   3. discogs  — Discogs API enrichment (network, ~1s/track)
   4. cover_art — Cover Art Archive lookup (network, fast)
+  5. itunes  — iTunes Search API enrichment (network, ~3s/track due to rate limit)
 
 Requires ACOUSTID_API_KEY, MUSICBRAINZ_APP, DISCOGS_TOKEN in .env or shell.
 
@@ -24,10 +25,9 @@ Outputs:
 
 import argparse
 import json
-import os
 import sys
 import time
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 # Force UTF-8 on Windows console (default is cp1252)
@@ -48,11 +48,11 @@ AUDIO_EXTENSIONS = {".mp3", ".flac", ".aiff", ".aif", ".wav", ".m4a", ".ogg"}
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def collect_tracks(folder: Path, count: int) -> list[Path]:
     """Return up to `count` audio files from `folder`, sorted alphabetically."""
     files = sorted(
-        p for p in folder.iterdir()
-        if p.is_file() and p.suffix.lower() in AUDIO_EXTENSIONS
+        p for p in folder.iterdir() if p.is_file() and p.suffix.lower() in AUDIO_EXTENSIONS
     )
     return files[:count]
 
@@ -67,8 +67,7 @@ def field_fill_rate(results: list[dict], field: str) -> tuple[int, int]:
     """Return (filled_count, total) for a field across all result dicts."""
     total = len(results)
     filled = sum(
-        1 for r in results
-        if r.get(field) is not None and r.get(field) != "" and r.get(field) != []
+        1 for r in results if r.get(field) is not None and r.get(field) != "" and r.get(field) != []
     )
     return filled, total
 
@@ -76,6 +75,7 @@ def field_fill_rate(results: list[dict], field: str) -> tuple[int, int]:
 # ---------------------------------------------------------------------------
 # Summary printers
 # ---------------------------------------------------------------------------
+
 
 def print_tags_summary(tag_results: list[dict]) -> None:
     n = len(tag_results)
@@ -88,26 +88,31 @@ def print_tags_summary(tag_results: list[dict]) -> None:
     print(f"  No tags present         {no_tags:>4}  {pct(no_tags, n)}")
 
     for label, field in [
-        ("title",          "tag_title"),
-        ("artist",         "tag_artist"),
-        ("album/release",  "tag_album"),
-        ("label",          "tag_label"),
-        ("catalogue no",   "tag_catalogue_no"),
-        ("genre",          "tag_genre"),
-        ("BPM",            "tag_bpm"),
-        ("key",            "tag_key"),
-        ("ISRC",           "tag_isrc"),
+        ("title", "tag_title"),
+        ("artist", "tag_artist"),
+        ("album/release", "tag_album"),
+        ("label", "tag_label"),
+        ("catalogue no", "tag_catalogue_no"),
+        ("genre", "tag_genre"),
+        ("BPM", "tag_bpm"),
+        ("key", "tag_key"),
+        ("ISRC", "tag_isrc"),
         ("year (ID3v2.4)", "tag_year_id3v24"),
         ("year (ID3v2.3)", "tag_year_id3v23"),
-        ("cover art",      "has_embedded_art"),
-        ("Serato tags",    "has_serato_tags"),
-        ("Traktor tags",   "has_traktor_tags"),
+        ("cover art", "has_embedded_art"),
+        ("Serato tags", "has_serato_tags"),
+        ("Traktor tags", "has_traktor_tags"),
         ("Rekordbox tags", "has_rekordbox_tags"),
     ]:
         filled, total = field_fill_rate(tag_results, field)
         # Boolean False counts as "not present" for art/dj-software fields;
         # re-count for those using truthy check.
-        if field in ("has_embedded_art", "has_serato_tags", "has_traktor_tags", "has_rekordbox_tags"):
+        if field in (
+            "has_embedded_art",
+            "has_serato_tags",
+            "has_traktor_tags",
+            "has_rekordbox_tags",
+        ):
             filled = sum(1 for r in tag_results if r.get(field) is True)
         print(f"  {label:<25} {filled:>4}  {pct(filled, total)}")
 
@@ -141,7 +146,9 @@ def print_acoustid_summary(acoustid_results: list[dict]) -> None:
     print(f"  Has year (MB)           {has_year:>4}  {pct(has_year, n)}")
     print(f"  Has front art flag      {has_art_flag:>4}  {pct(has_art_flag, n)}")
     if scores:
-        print(f"\n  AcoustID score — min={min(scores):.3f}  max={max(scores):.3f}  avg={sum(scores)/len(scores):.3f}")
+        print(
+            f"\n  AcoustID score — min={min(scores):.3f}  max={max(scores):.3f}  avg={sum(scores)/len(scores):.3f}"
+        )
 
 
 def print_discogs_summary(discogs_results: list[dict]) -> None:
@@ -160,11 +167,13 @@ def print_discogs_summary(discogs_results: list[dict]) -> None:
     has_catno = sum(1 for r in discogs_results if r.get("discogs_catno"))
     has_year = sum(1 for r in discogs_results if r.get("discogs_year"))
     has_genres = sum(
-        1 for r in discogs_results
+        1
+        for r in discogs_results
         if r.get("discogs_genres") and r["discogs_genres"] not in ("[]", "null", None)
     )
     has_styles = sum(
-        1 for r in discogs_results
+        1
+        for r in discogs_results
         if r.get("discogs_styles") and r["discogs_styles"] not in ("[]", "null", None)
     )
 
@@ -191,25 +200,25 @@ def print_essentia_summary(essentia_results: list[dict]) -> None:
     print(f"  Errors                  {errors:>4}  {pct(errors, n)}")
 
     for label, field in [
-        ("BPM",                "bpm"),
-        ("BPM confidence",     "bpm_confidence"),
-        ("key",                "key"),
-        ("key strength",       "key_strength"),
-        ("integrated loudness","integrated_loudness"),
-        ("loudness range",     "loudness_range"),
+        ("BPM", "bpm"),
+        ("BPM confidence", "bpm_confidence"),
+        ("key", "key"),
+        ("key strength", "key_strength"),
+        ("integrated loudness", "integrated_loudness"),
+        ("loudness range", "loudness_range"),
         ("dynamic complexity", "dynamic_complexity"),
-        ("spectral centroid",  "spectral_centroid_hz"),
-        ("sub-bass ratio",     "sub_bass_ratio"),
-        ("high-freq ratio",    "high_freq_ratio"),
-        ("MFCC mean",          "mfcc_mean"),
-        ("bark bands",         "bark_bands_mean"),
-        ("onset rate",         "onset_rate"),
-        ("danceability",       "danceability"),
-        ("tuning freq",        "tuning_frequency_hz"),
-        ("pitch frames",       "pitch_frames"),
-        ("beat ticks",         "beat_ticks"),
-        ("genre labels (ML)",  "genre_top_labels"),
-        ("embedding (ML)",     "embedding"),
+        ("spectral centroid", "spectral_centroid_hz"),
+        ("sub-bass ratio", "sub_bass_ratio"),
+        ("high-freq ratio", "high_freq_ratio"),
+        ("MFCC mean", "mfcc_mean"),
+        ("bark bands", "bark_bands_mean"),
+        ("onset rate", "onset_rate"),
+        ("danceability", "danceability"),
+        ("tuning freq", "tuning_frequency_hz"),
+        ("pitch frames", "pitch_frames"),
+        ("beat ticks", "beat_ticks"),
+        ("genre labels (ML)", "genre_top_labels"),
+        ("embedding (ML)", "embedding"),
     ]:
         filled, total = field_fill_rate(essentia_results, field)
         print(f"  {label:<25} {filled:>4}  {pct(filled, total)}")
@@ -217,7 +226,9 @@ def print_essentia_summary(essentia_results: list[dict]) -> None:
     # BPM stats
     bpms = [r["bpm"] for r in essentia_results if r.get("bpm") is not None]
     if bpms:
-        print(f"\n  BPM range: min={min(bpms):.1f}  max={max(bpms):.1f}  avg={sum(bpms)/len(bpms):.1f}")
+        print(
+            f"\n  BPM range: min={min(bpms):.1f}  max={max(bpms):.1f}  avg={sum(bpms)/len(bpms):.1f}"
+        )
 
     # Key distribution
     keys: dict[str, int] = {}
@@ -230,9 +241,53 @@ def print_essentia_summary(essentia_results: list[dict]) -> None:
         print(f"  Keys (top 6): {dict(top_keys)}")
 
     # Loudness stats
-    loudness = [r["integrated_loudness"] for r in essentia_results if r.get("integrated_loudness") is not None]
+    loudness = [
+        r["integrated_loudness"]
+        for r in essentia_results
+        if r.get("integrated_loudness") is not None
+    ]
     if loudness:
-        print(f"  Loudness (LUFS): min={min(loudness):.1f}  max={max(loudness):.1f}  avg={sum(loudness)/len(loudness):.1f}")
+        print(
+            f"  Loudness (LUFS): min={min(loudness):.1f}  max={max(loudness):.1f}  avg={sum(loudness)/len(loudness):.1f}"
+        )
+
+
+def print_itunes_summary(itunes_results: list[dict]) -> None:
+    n = len(itunes_results)
+    errors = sum(1 for r in itunes_results if r.get("itunes_error"))
+    high = sum(1 for r in itunes_results if r.get("itunes_confidence") == "high")
+    low = sum(1 for r in itunes_results if r.get("itunes_confidence") == "low")
+    no_match = sum(1 for r in itunes_results if r.get("itunes_confidence") == "none")
+    has_artwork = sum(1 for r in itunes_results if r.get("itunes_artwork_url"))
+    has_date = sum(1 for r in itunes_results if r.get("itunes_release_date"))
+    has_genre = sum(1 for r in itunes_results if r.get("itunes_genre"))
+    has_streamable = sum(1 for r in itunes_results if r.get("itunes_is_streamable") is True)
+
+    strategies: dict[str, int] = {}
+    for r in itunes_results:
+        s = r.get("itunes_search_strategy") or "none"
+        strategies[s] = strategies.get(s, 0) + 1
+
+    print(f"\n  iTunes Search API  — {n} tracks")
+    print(f"  {'─' * 40}")
+    print(f"  Errors                  {errors:>4}  {pct(errors, n)}")
+    print(f"  High confidence match   {high:>4}  {pct(high, n)}")
+    print(f"  Low confidence match    {low:>4}  {pct(low, n)}")
+    print(f"  No match                {no_match:>4}  {pct(no_match, n)}")
+    print(f"\n  Has artwork URL         {has_artwork:>4}  {pct(has_artwork, n)}")
+    print(f"  Has release date        {has_date:>4}  {pct(has_date, n)}")
+    print(f"  Has genre               {has_genre:>4}  {pct(has_genre, n)}")
+    print(f"  Is streamable           {has_streamable:>4}  {pct(has_streamable, n)}")
+
+    # Genre distribution (top 5)
+    genres: dict[str, int] = {}
+    for r in itunes_results:
+        g = r.get("itunes_genre")
+        if g:
+            genres[g] = genres.get(g, 0) + 1
+    if genres:
+        top = sorted(genres.items(), key=lambda x: -x[1])[:5]
+        print(f"\n  Genres (top 5): {dict(top)}")
 
 
 def print_cover_art_summary(art_results: list[dict]) -> None:
@@ -253,6 +308,7 @@ def print_cover_art_summary(art_results: list[dict]) -> None:
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def main() -> None:
     parser = argparse.ArgumentParser(
@@ -283,6 +339,11 @@ def main() -> None:
         "--no-cover-art",
         action="store_true",
         help="Skip Cover Art Archive lookup",
+    )
+    parser.add_argument(
+        "--no-itunes",
+        action="store_true",
+        help="Skip iTunes Search API lookup",
     )
     parser.add_argument(
         "--no-rate-limit",
@@ -331,7 +392,12 @@ def main() -> None:
     print(f"  acoustid:   {'SKIP' if args.no_acoustid else f'enabled (rate-limited) ({n} tracks)'}")
     print(f"  discogs:    {'SKIP' if args.no_discogs else f'enabled ({n} tracks)'}")
     print(f"  cover_art:  {'SKIP' if args.no_cover_art else f'enabled ({n} tracks)'}")
-    print(f"  essentia:   {'enabled (no ML, no pitch)' if args.essentia and not args.essentia_ml and args.no_pitch else 'enabled (no ML)' if args.essentia and not args.essentia_ml else 'enabled (full)' if args.essentia else 'SKIP'}{f' ({essentia_count} tracks)' if args.essentia else ''}")
+    print(
+        f"  itunes:     {'SKIP' if args.no_itunes else f'enabled (~3s/track rate limit) ({n} tracks)'}"
+    )
+    print(
+        f"  essentia:   {'enabled (no ML, no pitch)' if args.essentia and not args.essentia_ml and args.no_pitch else 'enabled (no ML)' if args.essentia and not args.essentia_ml else 'enabled (full)' if args.essentia else 'SKIP'}{f' ({essentia_count} tracks)' if args.essentia else ''}"
+    )
     print()
 
     # --- Lazy imports (only import what we'll use) ---
@@ -341,8 +407,9 @@ def main() -> None:
     acoustid_config = None
     if not args.no_acoustid:
         try:
-            from backend.importer.acoustid import identify_track
             from backend.config import AcoustIDConfig
+            from backend.importer.acoustid import identify_track
+
             acoustid_config = AcoustIDConfig(mb_rate_limit=not args.no_rate_limit)
             acoustid_fn = identify_track
         except Exception as exc:
@@ -355,8 +422,10 @@ def main() -> None:
     if not args.no_discogs:
         try:
             import discogs_client as dc
-            from backend.importer.discogs import fetch_discogs_metadata
+
             from backend.config import DiscogsConfig
+            from backend.importer.discogs import fetch_discogs_metadata
+
             discogs_config = DiscogsConfig()
             discogs_client_obj = dc.Client(
                 discogs_config.user_agent,
@@ -371,20 +440,36 @@ def main() -> None:
     cover_art_config = None
     if not args.no_cover_art:
         try:
-            from backend.importer.cover_art import fetch_cover_art
             from backend.config import CoverArtConfig
+            from backend.importer.cover_art import fetch_cover_art
+
             cover_art_config = CoverArtConfig()
             cover_art_fn = fetch_cover_art
         except Exception as exc:
             print(f"  WARNING: could not load cover_art module: {exc}")
             print("  Skipping cover art.\n")
 
+    itunes_fn = None
+    itunes_config = None
+    if not args.no_itunes:
+        try:
+            from backend.config import ItunesConfig
+            from backend.importer.itunes import fetch_itunes
+            from backend.importer.tags import clean_search_title, normalise_artist
+
+            itunes_config = ItunesConfig()
+            itunes_fn = fetch_itunes
+        except Exception as exc:
+            print(f"  WARNING: could not load itunes module: {exc}")
+            print("  Skipping iTunes.\n")
+
     essentia_fn = None
     essentia_config = None
     if args.essentia:
         try:
-            from backend.importer.essentia_analysis import analyse_track
             from backend.config import EssentiaConfig
+            from backend.importer.essentia_analysis import analyse_track
+
             essentia_config = EssentiaConfig(
                 run_ml_models=args.essentia_ml,
                 run_pitch_analysis=not args.no_pitch,
@@ -400,6 +485,7 @@ def main() -> None:
     acoustid_results: list[dict] = []
     discogs_results: list[dict] = []
     art_results: list[dict] = []
+    itunes_results: list[dict] = []
     essentia_results: list[dict] = []
 
     t_start = time.time()
@@ -436,6 +522,7 @@ def main() -> None:
             disc = discogs_fn(
                 artist=artist,
                 title=title,
+                label=tags.get("tag_label"),
                 catno=catno,
                 barcode=None,
                 year=year,
@@ -461,7 +548,21 @@ def main() -> None:
         else:
             row["cover_art"] = None
 
-        # 5. Essentia — only for the first essentia_count tracks
+        # 5. iTunes Search API
+        if itunes_fn and itunes_config:
+            mb = row.get("acoustid") or {}
+            raw_artist = mb.get("artist") or tags.get("tag_artist") or ""
+            raw_title = mb.get("title") or tags.get("tag_title") or ""
+            itunes_artist = normalise_artist(raw_artist)
+            itunes_title = clean_search_title(raw_title)
+            duration = tags.get("duration_seconds")
+            it = itunes_fn(itunes_artist, itunes_title, duration, itunes_config)
+            row["itunes"] = it
+            itunes_results.append(it)
+        else:
+            row["itunes"] = None
+
+        # 6. Essentia — only for the first essentia_count tracks
         if essentia_fn and essentia_config and i <= essentia_count:
             ess = essentia_fn(str(track_path), essentia_config)
             row["essentia"] = ess
@@ -499,6 +600,11 @@ def main() -> None:
     else:
         print("\n  Cover Art Archive  — skipped")
 
+    if itunes_results:
+        print_itunes_summary(itunes_results)
+    else:
+        print("\n  iTunes Search API  — skipped")
+
     if essentia_results:
         print_essentia_summary(essentia_results)
     else:
@@ -507,10 +613,7 @@ def main() -> None:
     print()
 
     # --- Spot-check: first 5 tracks with MB + Discogs data ---
-    matched = [
-        r for r in all_results
-        if r.get("acoustid") and r["acoustid"].get("acoustid_match")
-    ]
+    matched = [r for r in all_results if r.get("acoustid") and r["acoustid"].get("acoustid_match")]
     if matched:
         print(f"{'=' * 60}")
         print(f"  SPOT-CHECK — first {min(5, len(matched))} AcoustID matches")
@@ -520,18 +623,28 @@ def main() -> None:
             mb = r["acoustid"]
             d = r.get("discogs") or {}
             art = r.get("cover_art") or {}
+            it = r.get("itunes") or {}
             print(f"\n  File    : {r['file_name'][:70]}")
             print(f"  Tag     : {t.get('tag_artist')} — {t.get('tag_title')}")
             print(f"  MB      : {mb.get('artist')} — {mb.get('title')} ({mb.get('year')})")
-            print(f"  Label   : MB={mb.get('label') or '—'}  Discogs={d.get('discogs_label') or '—'}")
-            print(f"  Catno   : MB={mb.get('catalogue_number') or '—'}  Discogs={d.get('discogs_catno') or '—'}")
+            print(
+                f"  Label   : MB={mb.get('label') or '—'}  Discogs={d.get('discogs_label') or '—'}"
+            )
+            print(
+                f"  Catno   : MB={mb.get('catalogue_number') or '—'}  Discogs={d.get('discogs_catno') or '—'}"
+            )
             print(f"  Styles  : {d.get('discogs_styles') or '—'}")
-            print(f"  Art     : {art.get('cover_art_url') or 'none'} ({art.get('cover_art_source') or 'none'})")
+            print(
+                f"  Art     : {art.get('cover_art_url') or 'none'} ({art.get('cover_art_source') or 'none'})"
+            )
+            print(
+                f"  iTunes  : [{it.get('itunes_confidence') or 'none'}] {it.get('itunes_artist_name') or '-'} / {it.get('itunes_track_name') or '-'}"
+            )
         print()
 
     # --- Save JSON ---
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S")
+    ts = datetime.now(UTC).strftime("%Y%m%dT%H%M%S")
     out_path = OUTPUT_DIR / f"importers_test_{ts}.json"
 
     # Make results JSON-serialisable (convert Path objects etc.)
@@ -541,8 +654,8 @@ def main() -> None:
         # mutagen ID3TimeStamp and similar objects that have a str() representation
         try:
             return str(obj)
-        except Exception:
-            raise TypeError(f"Not serialisable: {type(obj)}")
+        except Exception as err:
+            raise TypeError(f"Not serialisable: {type(obj)}") from err
 
     with open(out_path, "w", encoding="utf-8") as f:
         json.dump(all_results, f, indent=2, default=serialise, ensure_ascii=False)

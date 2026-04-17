@@ -39,6 +39,7 @@ into improving future fills.
 | Track identification | AcoustID + pyacoustid | Free, fingerprint-based |
 | Metadata lookup | MusicBrainz (musicbrainzngs) | Artist, label, year, catalogue |
 | Metadata lookup 2 | Discogs API | Strong for electronic music |
+| Metadata lookup 3 | iTunes Search API | Artwork URLs, release dates; no auth; 84% match on house library |
 | Database | SQLite + sqlite-vec extension | Local, no server, vector search built in |
 | Embeddings | sentence-transformers | Local, free, CPU-only is fine |
 | AI — crate fill | Claude API (claude-sonnet-4-20250514) | Via Anthropic API |
@@ -75,6 +76,7 @@ into improving future fills.
 - Claude API for crate fill, next track, description refinement
 - AcoustID + MusicBrainz for track identification
 - Discogs for label/catalogue enrichment
+- iTunes Search API for artwork URLs and release dates (no auth; 84% match validated on house library)
 - uv for Python package management
 - Ruff for linting and formatting
 - pytest for testing
@@ -171,6 +173,64 @@ library — to be validated in Phase 2.
 *To be researched. Expected: label, catalogue number, release year, genre,
 style tags. Coverage for electronic music TBD.*
 
+### iTunes Search API (Apple Music)
+Researched 2026-04-11. Full reference: `docs/research/itunes.md`.
+
+Key facts:
+- No authentication required. Legacy API (frozen ~2017), still live.
+- No ISRC field — not exposed anywhere in search or lookup. ISRC must come from MusicBrainz.
+- No label field — `copyright` string exists on collection results but is unstructured.
+- `primaryGenreName` is too coarse for Crate — "Dance", "Electronic", "Trance" only; cannot distinguish techno from house.
+- `artworkUrl100` — URL template; substitute dimensions in path (e.g. `600x600bb.jpg`) to get larger sizes. **Main unique value-add over MusicBrainz.**
+- Rate limit: ~20 req/min per IP; returns HTTP 403 when exceeded.
+- Coverage: ~30–50% match for a typical techno/house library. Present: major-label electronic back to early 1990s. Absent: white labels, promos, vinyl rips, non-digitally-distributed releases.
+
+**Confirmed fields returned for a music track result:**
+```
+wrapperType          →  string — always "track"
+kind                 →  string — always "song" for audio tracks
+trackId              →  integer — iTunes Store track ID; stable while listing exists
+artistId             →  integer — iTunes artist ID
+collectionId         →  integer — iTunes album/collection ID
+trackName            →  string — track title as listed on iTunes
+artistName           →  string — artist name as listed on iTunes
+collectionName       →  string — album/collection name
+trackCensoredName    →  string — censored version; same as trackName if not explicit
+collectionCensoredName → string
+artistViewUrl        →  string — iTunes Store artist page URL
+collectionViewUrl    →  string — iTunes Store album page URL
+trackViewUrl         →  string — iTunes Store track page URL
+previewUrl           →  string — 30-second MP3 preview URL (sometimes absent)
+artworkUrl30         →  string — 30×30 artwork URL
+artworkUrl60         →  string — 60×60 artwork URL
+artworkUrl100        →  string — 100×100 artwork URL; resize by editing path dimensions
+collectionPrice      →  float — album price in currency of `country`
+trackPrice           →  float — track price
+releaseDate          →  string — ISO 8601 e.g. "2005-01-01T00:00:00Z"; UTC; day precision only
+collectionExplicitness → string — "explicit", "cleaned", or "notExplicit"
+trackExplicitness    →  string — same values
+discCount            →  integer — number of discs in the release
+discNumber           →  integer — disc number of this track
+trackCount           →  integer — total tracks on the release
+trackNumber          →  integer — track number on the release
+trackTimeMillis      →  integer — track duration in MILLISECONDS
+country              →  string — ISO 3166-1 alpha-2 country code of the store queried
+currency             →  string — ISO 4217 currency code
+primaryGenreName     →  string — top-level genre only; insufficient for techno/house distinction
+isStreamable         →  boolean — whether track is available on Apple Music streaming
+```
+No ISRC, no label, no catalogue number, no BPM, no key — all must come from other sources.
+
+### Last.fm
+*To be researched. Expected: scrobble count, listener count, tags,
+similar artists, top tags for a track. Useful for popularity signals and
+genre/mood enrichment from community tagging. Requires Last.fm API key.*
+
+### Deezer
+*To be researched. Expected: BPM, release year, label, genre, explicit flag,
+track preview URL, album cover art. Coverage for electronic music TBD.
+Free API, no auth required for basic lookups.*
+
 ### Essentia (audio analysis)
 Researched 2026-04-02. Full reference: `docs/research/essentia.md`.
 
@@ -208,6 +268,7 @@ Configuration notes:
 Thread safety: not fully thread-safe; max 2 workers; algorithm instances must not be shared across threads.
 
 Windows: Python bindings do not work on native Windows. Use WSL2 or Linux Docker.
+WSL2 confirmed working on dev machine (2026-04-11). Run all Essentia scripts via `wsl -e bash -c "..."` from the project root. Install with `~/.local/bin/uv sync --extra analysis`.
 
 ---
 
@@ -408,23 +469,33 @@ LOG_LEVEL=INFO
 - [x] .env.example, .gitignore, README.md
 
 **Phase 1 — Research and data mapping (current)**
-- [ ] Research Essentia — algorithms, ML models, outputs (tasks/research-essentia.md)
-- [ ] Research AcoustID API — exact outputs, rate limits, match rate
-- [ ] Research MusicBrainz API — exact outputs, field reliability
+- [x] Research Essentia — algorithms, ML models, outputs (`docs/research/essentia.md`)
+- [x] Research AcoustID API — exact outputs, rate limits, match rate (`docs/research/acoustid.md`)
+- [x] Research MusicBrainz API — exact outputs, field reliability (`docs/research/acoustid.md`)
+- [x] Research file tags (mutagen) — what fields exist and reliability on DJ files
+- [x] Research iTunes Search API — exact outputs, coverage for electronic music (`docs/research/itunes.md`)
 - [ ] Research Discogs API — exact outputs, coverage for electronic music
-- [ ] Research file tags (mutagen) — what fields exist and reliability on DJ files
+- [ ] Research Last.fm API — scrobble data, tag schema, rate limits
+- [ ] Research Deezer API — exact outputs, coverage for electronic music
 - [ ] Map all source outputs side by side into a single field inventory
 - [ ] Finalise database schema based on confirmed outputs
 - [ ] Validate Essentia on 50 real tracks — calibrate derived score formulas
 
+**Phase 1.5 — Importer implementations (ahead of schema — done as research outputs)**
+- [x] mutagen tag reader (`backend/importer/tags.py`) — validated on 50 real tracks
+- [x] AcoustID + MusicBrainz importer (`backend/importer/acoustid.py`) — 36% match on house library
+- [x] Discogs importer (`backend/importer/discogs.py`) — 64% match; label+title strategy most effective
+- [x] Cover Art Archive importer (`backend/importer/cover_art.py`) — 18% match (gated on AcoustID)
+- [x] iTunes importer (`backend/importer/itunes.py`) — 84% match; best single source for this library type
+- [x] Batch test script (`scripts/test_importers.py`) — runs all 5 importers on N tracks with summary report
+- [x] Real-data validation — 50 tracks from JUN2025 HOUSE TRANCY (2026-04-17); zero importer errors
+
 **Phase 2 — Import pipeline**
-- [ ] mutagen tag reading
-- [ ] AcoustID fingerprinting + lookup
-- [ ] MusicBrainz metadata fetch
-- [ ] Discogs enrichment
-- [ ] Essentia audio analysis
-- [ ] Derived score computation (formulas confirmed in Phase 1)
-- [ ] SQLite write with INSERT OR REPLACE
+- [ ] Pipeline orchestration (`backend/importer/pipeline.py`) — tie all importers together
+- [ ] SQLite schema + write with INSERT OR REPLACE (`backend/database.py`)
+- [ ] Essentia audio analysis (WSL2 only; `backend/importer/essentia_analysis.py` exists)
+- [ ] Derived score computation (formulas TBC after Essentia validation on 50 tracks)
+- [ ] Embeddings (`backend/importer/embeddings.py`)
 
 **Phase 3 — Backend API**
 - [ ] FastAPI setup

@@ -20,6 +20,7 @@ Usage:
     result = fetch_discogs_metadata(
         artist="Jeff Mills",
         title="The Bells",
+        label="Purpose Maker",
         catno="PM-020",
         barcode=None,
         year=1997,
@@ -138,6 +139,7 @@ def _data_get(result: object, key: str, default=None):
 def _score_candidate(
     result: object,
     artist: str | None,
+    label: str | None,
     catno: str | None,
     year: int | None,
 ) -> float:
@@ -159,6 +161,19 @@ def _score_candidate(
             result_title = _data_get(result, "title") or ""
             if artist.lower() in result_title.lower():
                 score += 2.0
+        except Exception:
+            pass
+
+    # Label name match in result.label list → +2
+    if label:
+        try:
+            result_labels = _data_get(result, "label") or []
+            if isinstance(result_labels, list):
+                label_lower = label.lower()
+                for lbl in result_labels:
+                    if isinstance(lbl, str) and label_lower in lbl.lower():
+                        score += 2.0
+                        break
         except Exception:
             pass
 
@@ -209,6 +224,7 @@ def _score_candidate(
 def _select_best_candidate(
     results: list,
     artist: str | None,
+    label: str | None,
     catno: str | None,
     year: int | None,
 ) -> tuple[object | None, float]:
@@ -216,7 +232,7 @@ def _select_best_candidate(
     if not results:
         return None, 0.0
 
-    scored = [(r, _score_candidate(r, artist, catno, year)) for r in results]
+    scored = [(r, _score_candidate(r, artist, label, catno, year)) for r in results]
     scored.sort(key=lambda x: (x[1], _safe_have(x[0])), reverse=True)
     best_result, best_score = scored[0]
     return best_result, best_score
@@ -287,7 +303,7 @@ def _search_artist_title(
         results = list(
             client.search(
                 artist=artist,
-                release_title=title,
+                track=title,
                 type="release",
                 format="Vinyl",
                 per_page=per_page,
@@ -298,7 +314,34 @@ def _search_artist_title(
 
     # Retry without format filter
     return list(
-        client.search(artist=artist, release_title=title, type="release", per_page=per_page)
+        client.search(artist=artist, track=title, type="release", per_page=per_page)
+    )
+
+
+def _search_label_title(
+    client: discogs_client.Client,
+    label: str,
+    title: str,
+    config: DiscogsConfig,
+) -> list:
+    """Search by label name + track title. Vinyl-filtered first if enabled."""
+    per_page = min(config.max_search_results, 10)
+
+    if config.vinyl_filter_first:
+        results = list(
+            client.search(
+                label=label,
+                track=title,
+                type="release",
+                format="Vinyl",
+                per_page=per_page,
+            )
+        )
+        if results:
+            return results
+
+    return list(
+        client.search(label=label, track=title, type="release", per_page=per_page)
     )
 
 
@@ -641,9 +684,11 @@ def _extract_release(release: object) -> dict:
 def fetch_discogs_metadata(
     artist: str | None,
     title: str | None,
-    catno: str | None,
-    barcode: str | None,
-    year: int | None,
+    label: str | None = None,
+    catno: str | None = None,
+    barcode: str | None = None,
+    year: int | None = None,
+    *,
     client: discogs_client.Client,
     config: DiscogsConfig,
 ) -> dict:
@@ -689,7 +734,23 @@ def fetch_discogs_metadata(
                     logger.warning("discogs: barcode search HTTP %s: %s", status, exc)
                     return _failure_dict(str(exc), strategy)
 
-        # --- Step 3: artist + title ---
+        # --- Step 3: label + title ---
+        if not results and label and title:
+            strategy = "label_title"
+            try:
+                results = _search_label_title(client, label, title, config)
+            except discogs_client.exceptions.HTTPError as exc:
+                status = _http_status(exc)
+                if status == 404:
+                    logger.debug("discogs: label+title search 404 for label=%s", label)
+                elif status and 400 <= status < 500:
+                    logger.warning("discogs: label+title search HTTP %s: %s", status, exc)
+                    return _failure_dict(str(exc), strategy)
+                else:
+                    logger.warning("discogs: label+title search HTTP %s: %s", status, exc)
+                    return _failure_dict(str(exc), strategy)
+
+        # --- Step 4: artist + title ---
         if not results and artist and title:
             strategy = "artist_title"
             try:
@@ -705,16 +766,16 @@ def fetch_discogs_metadata(
                     logger.warning("discogs: artist+title search HTTP %s: %s", status, exc)
                     return _failure_dict(str(exc), strategy)
 
-        # --- Step 4: no results after all strategies ---
+        # --- Step 5: no results after all strategies ---
         if not results:
             logger.debug(
-                "discogs: no results for artist=%s title=%s catno=%s barcode=%s",
-                artist, title, catno, barcode,
+                "discogs: no results for artist=%s title=%s label=%s catno=%s barcode=%s",
+                artist, title, label, catno, barcode,
             )
-            return _no_match_dict(strategy)
+            return _no_match_dict("none")
 
         # --- Candidate selection ---
-        best_result, best_score = _select_best_candidate(results, artist, catno, year)
+        best_result, best_score = _select_best_candidate(results, artist, label, catno, year)
 
         if best_result is None or best_score < config.confidence_threshold_low:
             logger.debug(

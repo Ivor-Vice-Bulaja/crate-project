@@ -10,6 +10,7 @@ Never writes to the file.
 
 import logging
 import os
+import re
 from pathlib import Path
 
 import mutagen
@@ -21,6 +22,56 @@ import mutagen.oggvorbis
 import mutagen.wave
 
 logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Search string normalisation
+# ---------------------------------------------------------------------------
+
+# DJ-library filename suffixes that carry no search value and confuse iTunes.
+# Matched case-insensitively, anywhere in the title string.
+_TITLE_NOISE_RE = re.compile(
+    r"\b(vinyl[\s_-]*only|free[\s_-]*dl|free[\s_-]*download|promo[\s_-]*only|promo)\b",
+    re.IGNORECASE,
+)
+
+# Artist separator variants that iTunes does not understand.
+# " x " and " vs " (with surrounding spaces) → " & "
+_ARTIST_SEP_RE = re.compile(r"\s+(?:x|vs\.?)\s+", re.IGNORECASE)
+
+
+def clean_search_title(title: str) -> str:
+    """
+    Strip DJ-library filename noise from a title before passing it to iTunes.
+
+    Removes suffixes like "VINYL ONLY", "FREE DL", "FREE DOWNLOAD", "PROMO".
+    Collapses any double spaces left behind and strips leading/trailing whitespace.
+
+    Examples:
+        "A1 Espeon VINYL ONLY"  → "A1 Espeon"
+        "Track (FREE DL)"       → "Track ()"   # parentheses left; iTunes ignores them
+        "My Track PROMO"        → "My Track"
+    """
+    cleaned = _TITLE_NOISE_RE.sub("", title)
+    cleaned = re.sub(r"  +", " ", cleaned).strip()
+    return cleaned
+
+
+def normalise_artist(artist: str) -> str:
+    """
+    Normalise artist separator variants to " & " for iTunes search.
+
+    iTunes understands " & " and "," as multi-artist separators but not " x "
+    or " vs ". This normalisation improves match rate for tracks whose filenames
+    use the DJ convention of "Artist A x Artist B".
+
+    Examples:
+        "Asphalt DJ x Gzardin"  → "Asphalt DJ & Gzardin"
+        "A vs B"                → "A & B"
+        "A vs. B"               → "A & B"
+        "A & B"                 → "A & B"   (unchanged)
+    """
+    return _ARTIST_SEP_RE.sub(" & ", artist)
+
 
 # ---------------------------------------------------------------------------
 # Helpers

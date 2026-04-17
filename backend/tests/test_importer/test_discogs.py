@@ -598,6 +598,114 @@ def test_vinyl_filter_disabled_skips_format_param(config, mock_search_result, mo
 
 
 # ---------------------------------------------------------------------------
+# Happy path — label+title strategy
+# ---------------------------------------------------------------------------
+
+
+def test_label_title_strategy_fires_when_catno_and_barcode_fail(config, mock_search_result, mock_release):
+    """label+title search is tried after catno and barcode both return nothing."""
+    search_calls = []
+
+    def search_side_effect(**kwargs):
+        search_calls.append(kwargs)
+        if "label" in kwargs and "track" in kwargs:
+            return [mock_search_result]
+        return []
+
+    client = MagicMock()
+    client.search.side_effect = search_side_effect
+    client.release.return_value = mock_release
+
+    result = fetch_discogs_metadata(
+        artist="Jeff Mills",
+        title="The Bells",
+        label="Purpose Maker",
+        catno=None,
+        barcode=None,
+        year=2006,
+        client=client,
+        config=config,
+    )
+
+    assert result["discogs_search_strategy"] == "label_title"
+    assert result["discogs_release_id"] is not None
+    assert any("label" in c for c in search_calls)
+
+
+def test_label_title_skipped_when_catno_already_matched(config, mock_search_result, mock_release):
+    """label+title is not attempted if catno already found results."""
+    search_calls = []
+
+    def search_side_effect(**kwargs):
+        search_calls.append(kwargs)
+        if "catno" in kwargs:
+            return [mock_search_result]
+        return []
+
+    client = MagicMock()
+    client.search.side_effect = search_side_effect
+    client.release.return_value = mock_release
+
+    result = fetch_discogs_metadata(
+        artist="Jeff Mills",
+        title="The Bells",
+        label="Purpose Maker",
+        catno="PM-020",
+        barcode=None,
+        year=2006,
+        client=client,
+        config=config,
+    )
+
+    assert result["discogs_search_strategy"] == "catno"
+    assert all("label" not in c for c in search_calls)
+
+
+def test_label_scoring_boosts_matching_candidate(config, mock_release):
+    """A candidate whose label matches the input label gets a higher score."""
+    # Candidate with label match — set .label as a list so _data_get returns it directly
+    candidate_with_label = MagicMock()
+    candidate_with_label.id = 616407
+    candidate_with_label.title = "Some Release"
+    candidate_with_label.catno = "XYZ-001"
+    candidate_with_label.year = "2006"
+    candidate_with_label.format = ["Vinyl"]
+    candidate_with_label.data_quality = "Correct"
+    candidate_with_label.community = MagicMock(have=50, want=20)
+    candidate_with_label.label = ["Purpose Maker"]
+
+    # Candidate without label match
+    candidate_no_label = MagicMock()
+    candidate_no_label.id = 999999
+    candidate_no_label.title = "Some Release"
+    candidate_no_label.catno = "XYZ-001"
+    candidate_no_label.year = "2006"
+    candidate_no_label.format = ["Vinyl"]
+    candidate_no_label.data_quality = "Correct"
+    candidate_no_label.community = MagicMock(have=50, want=20)
+    candidate_no_label.label = ["Unknown Label"]
+
+    client = _make_client(
+        search_results=[candidate_no_label, candidate_with_label],
+        release=mock_release,
+    )
+
+    result = fetch_discogs_metadata(
+        artist=None,
+        title="Some Release",
+        label="Purpose Maker",
+        catno=None,
+        barcode=None,
+        year=2006,
+        client=client,
+        config=config,
+    )
+
+    # The label-matching candidate (616407) should win
+    client.release.assert_called_once_with(616407)
+
+
+# ---------------------------------------------------------------------------
 # Tracklist — heading/index entries excluded
 # ---------------------------------------------------------------------------
 

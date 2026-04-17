@@ -179,9 +179,7 @@ class DiscogsConfig:
     # Personal access token for Discogs API auth.
     # None → unauthenticated, rate-limited to 25 req/min.
     # Set via DISCOGS_TOKEN env var.
-    discogs_token: str | None = field(
-        default_factory=lambda: _optional("DISCOGS_TOKEN") or None
-    )
+    discogs_token: str | None = field(default_factory=lambda: _optional("DISCOGS_TOKEN") or None)
 
     # User-Agent header sent with every request.
     # Required by Discogs API terms of service.
@@ -209,6 +207,45 @@ class DiscogsConfig:
     # Whether to add format=Vinyl on the first artist+title search attempt.
     # A DJ library is overwhelmingly vinyl; the filter reduces noise.
     vinyl_filter_first: bool = True
+
+
+@dataclass
+class ItunesConfig:
+    """
+    All tuneable settings for the iTunes Search API enrichment module.
+
+    Pass an instance of this to fetch_itunes(). Nothing is hardcoded in
+    itunes.py — every knob lives here.
+    """
+
+    # User-Agent header sent with all requests.
+    user_agent: str = "CrateApp/0.1 (contact@example.com)"
+
+    # Number of candidates fetched per search call (iTunes limit param).
+    max_search_results: int = 5
+
+    # Minimum total score to accept a match as "high" confidence.
+    confidence_threshold: float = 0.7
+
+    # Maximum duration difference (seconds) to accept a candidate.
+    # 15s is tight enough to distinguish different mixes of the same track
+    # (e.g. Original Mix at 332s vs Ojala Remix at 352s = 19.7s diff → rejected).
+    duration_tolerance_seconds: float = 15.0
+
+    # Ordered list of country codes to try after US returns zero results.
+    country_fallbacks: list = field(default_factory=lambda: ["gb", "de"])
+
+    # Whether to use the ?id= endpoint for re-lookups of stored trackId values.
+    fetch_lookup: bool = True
+
+    # Pixel size for artwork URL template substitution.
+    artwork_size: int = 600
+
+    # Inter-request delay in seconds (applied after every HTTP call).
+    rate_limit_delay: float = 3.1
+
+    # requests.get timeout in seconds.
+    request_timeout: int = 10
 
 
 @dataclass
