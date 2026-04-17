@@ -383,6 +383,41 @@ Return ONLY valid JSON, no markdown fences, no preamble:
 
 ---
 
+## Working Method
+
+New features and data sources follow a four-stage process. Do not skip stages.
+
+**Stage 1 — Research prompt**
+Write `md/prompts/prompt-research-[topic].md`. This is the instruction file the user
+feeds to Claude to produce a research document. It must specify exactly what to
+research, what questions to answer, and what format the output should take.
+
+**Stage 2 — Research output**
+Claude produces `md/research/research-[topic].md`. This is the raw research output —
+confirmed facts, exact field names, rate limits, match rates, gotchas. Nothing is
+assumed; everything is sourced. CLAUDE.md is updated with a summary of confirmed
+findings after this stage.
+
+**Stage 3 — Plan prompt**
+Write `md/prompts/prompt-plan-[topic].md`. This is the instruction file the user feeds
+to Claude to produce an implementation plan. It must reference the research output and
+specify what to build, what to test, and what constraints apply.
+
+**Stage 4 — Plan output + execution**
+Claude produces `md/plans/plan-[topic].md` — the step-by-step implementation plan.
+Claude then executes the plan to produce the actual code.
+
+**File naming conventions:**
+- `md/prompts/prompt-research-[topic].md`
+- `md/research/research-[topic].md`
+- `md/prompts/prompt-plan-[topic].md`
+- `md/plans/plan-[topic].md`
+
+Never implement a feature before its research stage is complete. Never write a plan
+before the research document exists and CLAUDE.md has been updated with its findings.
+
+---
+
 ## Project File Structure
 
 ```
