@@ -300,14 +300,6 @@ import failures must not prevent a row from existing.
 | `es_analysis_timestamp` | TEXT | YES | `analysis_timestamp` | ISO 8601 UTC time of analysis |
 | `es_analysis_error` | TEXT | YES | `analysis_error` | Error message; NULL on success |
 
-### Derived Scores (formulas TBC)
-
-| Column | Type | Nullable | Notes |
-|---|---|---|---|
-| `energy_score` | REAL | YES | Derived from Essentia features; formula not yet locked |
-| `darkness_score` | REAL | YES | Derived from Essentia features; formula not yet locked |
-| `groove_score` | REAL | YES | Derived from Essentia features; formula not yet locked |
-
 ### Resolved Canonical Fields
 
 | Column | Type | Nullable | Notes |
@@ -618,11 +610,6 @@ CREATE TABLE tracks (
     es_version                      TEXT,
     es_analysis_timestamp           TEXT,
     es_analysis_error               TEXT,
-
-    -- Derived scores (formulas TBC)
-    energy_score                    REAL,
-    darkness_score                  REAL,
-    groove_score                    REAL,
 
     -- Resolved canonical fields
     resolved_title                  TEXT,
