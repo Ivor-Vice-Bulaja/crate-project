@@ -89,8 +89,6 @@ These must not be implemented until the relevant research is done:
 
 - **Database schema** — not finalised. Must be designed after mapping the exact
   outputs of all data sources (AcoustID, MusicBrainz, Discogs, Essentia, file tags).
-- **Derived score formulas** — not finalised. energy_score, darkness_score,
-  groove_score formulas must be validated against real tracks before being locked in.
 - **Embeddings storage** — separate table vs sqlite-vec native column
 - **File watcher implementation** — watchdog vs polling
 - **Frontend component library** — none chosen yet
@@ -272,38 +270,59 @@ WSL2 confirmed working on dev machine (2026-04-11). Run all Essentia scripts via
 
 ---
 
-## Import Pipeline (intended design — not yet built)
+## Import Pipeline
 
-> The step order and parallelism strategy below are directionally correct but
-> details (timing, field names, fallback chain) must be confirmed after Phase 1
-> research is complete.
+All six importers are built and validated. `pipeline.py` must call all of them
+and merge their output into a single `INSERT OR REPLACE INTO tracks`.
 
-Order of operations for a single track. Each step is independent — partial failures
-do not block subsequent steps.
+### Importers and their signatures
+
+| Importer | Function | Inputs | DB columns written |
+|---|---|---|---|
+| `tags.py` | `read_tags(path)` | file path only | `tag_*`, `file_format`, stream properties |
+| `acoustid.py` | `identify_track(path, config)` | file path | `acoustid_*`, `mb_*` |
+| `discogs.py` | `fetch_discogs_metadata(artist, title, label, catno, barcode, year, client, config)` | from tags + MB | `discogs_*` |
+| `itunes.py` | `fetch_itunes(artist, title, duration_seconds, config)` | from tags | `itunes_*` |
+| `cover_art.py` | `fetch_cover_art(release_mbid, release_group_mbid, config, mb_has_front_art)` | from acoustid/MB | `caa_*` |
+| `essentia_analysis.py` | `analyse_track(path, config)` | file path | `es_*`, embeddings |
+
+### Input dependencies between importers
+
+- **Discogs** needs `artist`, `title`, `label`, `catno` — take from tags result first,
+  supplement with MB fields where tags are absent.
+- **Cover Art Archive** needs `mb_release_id` and `mb_release_group_id` — only
+  available after acoustid/MB has run. CAA must run after acoustid, not concurrently.
+- All other importers are independent of each other.
+
+### Execution order and concurrency
 
 ```
-1. Hash check       — skip if file unchanged (same path + same hash)
-2. Read file tags   — mutagen, instant, no network
-3. AcoustID         — fingerprint + query, needs network
-4. MusicBrainz      — fetch full metadata using recording ID from step 3
-5. Discogs          — enrich label/catalogue where MusicBrainz is weak
-6. Essentia         — local audio analysis, no network
-7. Compute scores   — derived scores from Essentia features
-8. Write to DB      — single INSERT OR REPLACE
+1. Hash check            — skip if file_path + file_hash already in DB unchanged
+2. read_tags()           — instant, no network; provides inputs for Discogs + iTunes
+3. Concurrently:
+     a. identify_track() — AcoustID + MusicBrainz (network)
+     b. fetch_itunes()   — iTunes Search API (network); inputs from step 2
+     c. analyse_track()  — Essentia (CPU, WSL2 only); independent
+4. fetch_discogs_metadata() — inputs from steps 2 + 3a; run after both complete
+5. fetch_cover_art()    — inputs from step 3a; run after acoustid complete
+6. Compute resolved_* fields from fallback chains
+7. INSERT OR REPLACE INTO tracks — single write with all merged fields
 ```
 
-Parallelism: steps 3–5 (network) run concurrently with step 6 (CPU).
-Use ThreadPoolExecutor with max_workers=2. Essentia is not fully thread-safe —
-algorithm instances must not be shared across threads.
+Parallelism: use `ThreadPoolExecutor(max_workers=3)` for step 3.
+Essentia is not fully thread-safe — algorithm instances must not be shared across threads.
+Essentia must be skipped gracefully if unavailable (not running in WSL2).
 
-Fallback chain for key fields — provisional, to be confirmed after source research:
+### Resolved field fallback chains
+
 ```
-bpm:    Essentia → tag_bpm → None
-key:    Essentia → None
-title:  mb_title → tag_title → filename stem
-artist: mb_artist → tag_artist → None
-label:  mb_label → discogs_label → None
-year:   mb_year → discogs_year → tag_year → None
+resolved_title:        mb_title → tag_title → filename stem (never NULL)
+resolved_artist:       mb_artist → tag_artist → discogs_artists_sort → NULL
+resolved_bpm:          es_bpm → CAST(tag_bpm AS REAL) → NULL
+resolved_key:          es_key + ' ' + es_key_scale → tag_key → tag_initial_key_txxx → NULL
+resolved_label:        mb_label → discogs_label → tag_label → NULL
+resolved_year:         mb_year → discogs_year → discogs_master_year → tag_year_id3v24[:4] → tag_year_id3v23[:4] → itunes_release_date[:4] → NULL
+resolved_artwork_url:  itunes_artwork_url → caa_url → NULL
 ```
 
 ---
@@ -320,7 +339,6 @@ The schema will be designed around confirmed source outputs. Expected sections:
 - MusicBrainz data (fields TBC after research)
 - Discogs data (fields TBC after research)
 - Essentia audio features (TBC after research — see tasks/research-essentia.md)
-- Derived scores (formulas TBC after validation on real tracks)
 - Crate tables (stable — see below)
 - Usage tracking (last_played_date, play_count)
 
@@ -380,6 +398,41 @@ Selection rules:
 Return ONLY valid JSON, no markdown fences, no preamble:
 {"selected_ids": [14, 19, 6], "reasoning": "one sentence", "health_note": "any gaps or concerns"}
 ```
+
+---
+
+## Working Method
+
+New features and data sources follow a four-stage process. Do not skip stages.
+
+**Stage 1 — Research prompt**
+Write `md/prompts/prompt-research-[topic].md`. This is the instruction file the user
+feeds to Claude to produce a research document. It must specify exactly what to
+research, what questions to answer, and what format the output should take.
+
+**Stage 2 — Research output**
+Claude produces `md/research/research-[topic].md`. This is the raw research output —
+confirmed facts, exact field names, rate limits, match rates, gotchas. Nothing is
+assumed; everything is sourced. CLAUDE.md is updated with a summary of confirmed
+findings after this stage.
+
+**Stage 3 — Plan prompt**
+Write `md/prompts/prompt-plan-[topic].md`. This is the instruction file the user feeds
+to Claude to produce an implementation plan. It must reference the research output and
+specify what to build, what to test, and what constraints apply.
+
+**Stage 4 — Plan output + execution**
+Claude produces `md/plans/plan-[topic].md` — the step-by-step implementation plan.
+Claude then executes the plan to produce the actual code.
+
+**File naming conventions:**
+- `md/prompts/prompt-research-[topic].md`
+- `md/research/research-[topic].md`
+- `md/prompts/prompt-plan-[topic].md`
+- `md/plans/plan-[topic].md`
+
+Never implement a feature before its research stage is complete. Never write a plan
+before the research document exists and CLAUDE.md has been updated with its findings.
 
 ---
 
@@ -468,20 +521,20 @@ LOG_LEVEL=INFO
 - [x] React + Vite frontend scaffold with ESLint + Prettier
 - [x] .env.example, .gitignore, README.md
 
-**Phase 1 — Research and data mapping (current)**
+**Phase 1 — Research and data mapping (complete)**
 - [x] Research Essentia — algorithms, ML models, outputs (`docs/research/essentia.md`)
 - [x] Research AcoustID API — exact outputs, rate limits, match rate (`docs/research/acoustid.md`)
 - [x] Research MusicBrainz API — exact outputs, field reliability (`docs/research/acoustid.md`)
 - [x] Research file tags (mutagen) — what fields exist and reliability on DJ files
 - [x] Research iTunes Search API — exact outputs, coverage for electronic music (`docs/research/itunes.md`)
-- [ ] Research Discogs API — exact outputs, coverage for electronic music
-- [ ] Research Last.fm API — scrobble data, tag schema, rate limits
-- [ ] Research Deezer API — exact outputs, coverage for electronic music
-- [ ] Map all source outputs side by side into a single field inventory
-- [ ] Finalise database schema based on confirmed outputs
+- [x] Research Discogs API — done as part of importer build; findings in importer code and schema plan
+- [ ] Research Last.fm API — scrobble data, tag schema, rate limits (deferred — not blocking Phase 2)
+- [ ] Research Deezer API — exact outputs, coverage for electronic music (deferred — not blocking Phase 2)
+- [x] Map all source outputs side by side — done in `md/plans/plan-database-schema.md` column inventory
+- [x] Finalise database schema based on confirmed outputs — `backend/database.py` implemented 2026-04-19
 - [ ] Validate Essentia on 50 real tracks — calibrate derived score formulas
 
-**Phase 1.5 — Importer implementations (ahead of schema — done as research outputs)**
+**Phase 1.5 — Importer implementations (complete)**
 - [x] mutagen tag reader (`backend/importer/tags.py`) — validated on 50 real tracks
 - [x] AcoustID + MusicBrainz importer (`backend/importer/acoustid.py`) — 36% match on house library
 - [x] Discogs importer (`backend/importer/discogs.py`) — 64% match; label+title strategy most effective
@@ -490,11 +543,11 @@ LOG_LEVEL=INFO
 - [x] Batch test script (`scripts/test_importers.py`) — runs all 5 importers on N tracks with summary report
 - [x] Real-data validation — 50 tracks from JUN2025 HOUSE TRANCY (2026-04-17); zero importer errors
 
-**Phase 2 — Import pipeline**
+**Phase 2 — Import pipeline (current)**
+- [ ] Validate Essentia on 50 real tracks — calibrate derived score formulas before pipeline is wired up
 - [ ] Pipeline orchestration (`backend/importer/pipeline.py`) — tie all importers together
-- [ ] SQLite schema + write with INSERT OR REPLACE (`backend/database.py`)
+- [x] SQLite schema + migrations (`backend/database.py`) — implemented 2026-04-19; 9/10 tests pass
 - [ ] Essentia audio analysis (WSL2 only; `backend/importer/essentia_analysis.py` exists)
-- [ ] Derived score computation (formulas TBC after Essentia validation on 50 tracks)
 - [ ] Embeddings (`backend/importer/embeddings.py`)
 
 **Phase 3 — Backend API**
