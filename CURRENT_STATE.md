@@ -85,8 +85,9 @@ AcoustID/MB is a bonus where available, not a primary source for this library ty
 **Immediate (Phase 2 remaining):**
 - [x] Validate Essentia on real track (WSL2) — confirmed working on Cevi - High Line.wav; all standard algorithms + all ML models successful
 - ML model results: genre top-1 = Electronic/Techno, ml_danceability = 1.000, mood_party = 0.998, voice_probability = 0.145 (instrumental), all 5 embeddings returned (1280-dim EffNet + 512-dim track/artist/label/release)
-- [ ] Write `scripts/import_library.py` — batch entry point with tqdm, file discovery, calls `import_tracks()`
-- [ ] Embeddings (`backend/importer/embeddings.py`) — sentence-transformers or Essentia EffNet
+- [x] Write `scripts/import_library.py` — complete; CLI with argparse, rglob discovery, move detection, tqdm progress, import/skip/error counters, summary report; plan at `md/plans/plan-import-library.md`
+- [x] Tests for `import_library.py` — 10 tests in `backend/tests/test_importer/test_import_library.py`; covers discovery, move detection, dry-run, counters, config error, duration formatting
+- [ ] Embeddings (`backend/importer/embeddings.py`) — sentence-transformers or Essentia EffNet; decision needed before implementation
 
 **Deferred:**
 - [ ] Research Last.fm API
@@ -94,10 +95,9 @@ AcoustID/MB is a bonus where available, not a primary source for this library ty
 
 ## Open questions
 
-- Open Question 3 from plan-pipeline.md: embedding source — use Essentia EffNet embedding (1280-dim)
-  when available (WSL2), fall back to sentence-transformers when Essentia unavailable? Needs decision
-  before embeddings.py is implemented.
-- Should `import_library.py` walk subdirectories recursively, or only the top-level folder?
+- Embedding source decision: use Essentia EffNet embedding (1280-dim) when available (WSL2),
+  fall back to sentence-transformers when Essentia unavailable? Needs explicit decision before
+  `embeddings.py` is implemented.
 - False match detection for AcoustID: artist name similarity check between tag_artist and MB artist
   would catch fingerprint collisions observed in prior sessions.
 

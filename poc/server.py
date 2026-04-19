@@ -1,9 +1,10 @@
 """
 poc/server.py — Minimal POC server for testing the import pipeline.
 
-Exposes two endpoints:
-  POST /import   — accepts a list of file paths, runs the pipeline, returns results
-  GET  /tracks   — returns all tracks in the DB as JSON
+Exposes three endpoints:
+  POST /import          — accepts a list of file paths, runs the pipeline, returns per-file results
+  POST /import-folder   — accepts a folder path, discovers files, runs move detection, imports all
+  GET  /tracks          — returns all tracks in the DB as JSON
 
 Run from the project root (WSL2):
   uv run python poc/server.py
@@ -21,9 +22,13 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from urllib.parse import urlparse
 
-from backend.config import PipelineConfig
+from backend.config import ConfigurationError, PipelineConfig
 from backend.database import get_db
 from backend.importer.pipeline import import_track
+
+# import_library helpers — discover_files and detect_moves live there
+sys.path.insert(0, str(Path(__file__).parent.parent / "scripts"))
+from import_library import detect_moves, discover_files  # noqa: E402
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s %(name)s %(message)s")
 logger = logging.getLogger("poc")
@@ -42,6 +47,52 @@ def _get_all_tracks() -> list[dict]:
         return [_row_to_dict(r) for r in rows]
     finally:
         db.close()
+
+
+DEFAULT_EXTENSIONS = {".mp3", ".flac", ".wav", ".aiff", ".aif"}
+
+
+def _import_folder(folder: str, extensions: set[str] | None = None) -> dict:
+    """Discover files, run move detection, then import. Returns a summary dict."""
+    folder_path = Path(folder)
+    if not folder_path.is_dir():
+        return {"error": f"Not a directory: {folder}"}
+
+    exts = extensions or DEFAULT_EXTENSIONS
+    paths = discover_files(folder_path, exts)
+
+    db = get_db(DB_PATH)
+    try:
+        try:
+            config = PipelineConfig()
+        except ConfigurationError as exc:
+            return {"error": str(exc)}
+
+        detect_moves(db, paths)
+
+        imported = skipped = errors = 0
+        for path in paths:
+            result = import_track(str(path), db, config)
+            if result is not None:
+                imported += 1
+            else:
+                row = db.execute(
+                    "SELECT id FROM tracks WHERE file_path = ?", (str(path),)
+                ).fetchone()
+                if row is not None:
+                    skipped += 1
+                else:
+                    errors += 1
+    finally:
+        db.close()
+
+    return {
+        "folder": folder,
+        "discovered": len(paths),
+        "imported": imported,
+        "skipped": skipped,
+        "errors": errors,
+    }
 
 
 def _import_files(paths: list[str]) -> list[dict]:
@@ -110,19 +161,36 @@ class Handler(BaseHTTPRequestHandler):
 
     def do_POST(self):  # noqa: N802
         parsed = urlparse(self.path)
+        length = int(self.headers.get("Content-Length", 0))
+        body = self.rfile.read(length)
+        try:
+            data = json.loads(body) if body else {}
+        except Exception as e:
+            self._send_json({"error": f"invalid JSON: {e}"}, 400)
+            return
+
         if parsed.path == "/import":
-            length = int(self.headers.get("Content-Length", 0))
-            body = self.rfile.read(length)
+            paths = data.get("paths", [])
+            if not paths:
+                self._send_json({"error": "no paths provided"}, 400)
+                return
             try:
-                data = json.loads(body)
-                paths = data.get("paths", [])
-                if not paths:
-                    self._send_json({"error": "no paths provided"}, 400)
-                    return
                 results = _import_files(paths)
                 self._send_json(results)
             except Exception as e:
                 self._send_json({"error": str(e)}, 500)
+
+        elif parsed.path == "/import-folder":
+            folder = data.get("folder", "").strip()
+            if not folder:
+                self._send_json({"error": "folder is required"}, 400)
+                return
+            try:
+                result = _import_folder(folder)
+                self._send_json(result)
+            except Exception as e:
+                self._send_json({"error": str(e)}, 500)
+
         else:
             self._send_json({"error": "not found"}, 404)
 

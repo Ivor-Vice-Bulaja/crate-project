@@ -558,8 +558,9 @@ LOG_LEVEL=INFO
 - [x] Pipeline orchestration (`backend/importer/pipeline.py`) — implemented 2026-04-19; 47/47 tests pass
 - [x] `PipelineConfig` added to `backend/config.py` — wraps all per-importer configs; Discogs client created once per session
 - [x] SQLite schema + migrations (`backend/database.py`) — implemented 2026-04-19; 9/10 tests pass
-- [ ] Essentia audio analysis (WSL2 only; `backend/importer/essentia_analysis.py` exists)
-- [ ] Embeddings (`backend/importer/embeddings.py`)
+- [x] Essentia audio analysis — `essentia_analysis.py` complete and wired into `pipeline.py` (concurrent step 3c); all es_* columns mapped; vec_tracks embedding write inline in pipeline
+- [x] `scripts/import_library.py` — CLI entry point; argparse, rglob file discovery, move detection, tqdm progress bar, import/skip/error counters, summary report; 10 tests in `test_import_library.py`
+- [ ] Embeddings (`backend/importer/embeddings.py`) — pending decision on source: Essentia EffNet (WSL2) with sentence-transformers fallback
 
 **Phase 3 — Backend API**
 - [ ] FastAPI setup
