@@ -62,6 +62,8 @@
     #status { font-size: 13px; color: #666; }
     #status.ok { color: #4ade80; }
     #status.err { color: #f87171; }
+    .ok  { color: #4ade80; }
+    .err { color: #f87171; }
 
     /* Table */
     .table-wrap {
@@ -150,7 +152,19 @@
 <p class="subtitle">Import POC — paste file paths, run import, inspect results</p>
 
 <div class="import-panel">
-  <h2>Import tracks</h2>
+  <h2>Import folder</h2>
+  <div style="display:flex; gap:8px; align-items:center;">
+    <input id="folder-path" type="text" placeholder="/mnt/c/Users/Gamer/Music"
+      style="flex:1; background:#111; border:1px solid #333; border-radius:6px;
+             color:#e0e0e0; font-family:'SF Mono','Consolas',monospace;
+             font-size:12px; padding:8px 10px;" />
+    <button id="folder-btn" onclick="runFolderImport()">Import folder</button>
+  </div>
+  <div id="folder-status" style="font-size:13px; color:#666; margin-top:8px;"></div>
+</div>
+
+<div class="import-panel">
+  <h2>Import individual tracks</h2>
   <textarea id="paths" placeholder="Paste absolute file paths, one per line:
 /mnt/c/Users/Gamer/Music/track1.mp3
 /mnt/c/Users/Gamer/Music/track2.wav"></textarea>
@@ -220,17 +234,76 @@ const COLS = [
   ["mb_label",             "MB label",        "acoustid", v => v],
   ["mb_year",              "MB year",         "acoustid", v => v],
 
-  // Essentia
-  ["es_bpm",               "es BPM",          "essentia", v => v ? parseFloat(v).toFixed(1) : null],
-  ["es_key",               "es key",          "essentia", v => v],
-  ["es_key_scale",         "es scale",        "essentia", v => v],
-  ["es_loudness_lufs",     "LUFS",            "essentia", v => v ? parseFloat(v).toFixed(1) : null],
-  ["es_danceability",      "dance",           "essentia", v => v ? parseFloat(v).toFixed(2) : null],
+  // Essentia — rhythm
+  ["es_bpm",                        "es BPM",          "essentia", v => v ? parseFloat(v).toFixed(1) : null],
+  ["es_bpm_confidence",             "BPM conf",        "essentia", v => v ? parseFloat(v).toFixed(2) : null],
+  ["es_beat_ticks",                 "beat ticks",      "essentia", jsonLen],
+  ["es_bpm_estimates",              "BPM estimates",   "essentia", jsonLen],
+  ["es_bpm_intervals",              "BPM intervals",   "essentia", jsonLen],
+  // Essentia — key / tuning
+  ["es_key",                        "es key",          "essentia", v => v],
+  ["es_key_scale",                  "es scale",        "essentia", v => v],
+  ["es_key_strength",               "key strength",    "essentia", v => v ? parseFloat(v).toFixed(3) : null],
+  ["es_tuning_frequency_hz",        "tuning Hz",       "essentia", v => v ? parseFloat(v).toFixed(2) : null],
+  ["es_tuning_cents",               "tuning ¢",        "essentia", v => v ? parseFloat(v).toFixed(1) : null],
+  // Essentia — loudness / dynamics
+  ["es_integrated_loudness",        "LUFS",            "essentia", v => v ? parseFloat(v).toFixed(1) : null],
+  ["es_loudness_range",             "LU range",        "essentia", v => v ? parseFloat(v).toFixed(1) : null],
+  ["es_dynamic_complexity",         "dyn complexity",  "essentia", v => v ? parseFloat(v).toFixed(3) : null],
+  ["es_dynamic_complexity_loudness","dyn loud",        "essentia", v => v ? parseFloat(v).toFixed(3) : null],
+  // Essentia — spectral
+  ["es_spectral_centroid_hz",       "spectral ctr Hz", "essentia", v => v ? parseFloat(v).toFixed(0) : null],
+  ["es_sub_bass_ratio",             "sub bass",        "essentia", v => v ? parseFloat(v).toFixed(4) : null],
+  ["es_high_freq_ratio",            "high freq",       "essentia", v => v ? parseFloat(v).toFixed(4) : null],
+  ["es_mfcc_mean",                  "MFCC mean",       "essentia", jsonLen],
+  ["es_mfcc_var",                   "MFCC var",        "essentia", jsonLen],
+  ["es_bark_bands_mean",            "bark bands",      "essentia", jsonLen],
+  // Essentia — danceability / onsets
+  ["es_danceability",               "danceability",    "essentia", v => v ? parseFloat(v).toFixed(3) : null],
+  ["es_danceability_dfa",           "dance DFA",       "essentia", jsonLen],
+  ["es_onset_rate",                 "onset rate",      "essentia", v => v ? parseFloat(v).toFixed(2) : null],
+  ["es_onset_times",                "onsets",          "essentia", jsonLen],
+  // Essentia — pitch / voice
+  ["es_pitch_frames",               "pitch frames",    "essentia", jsonLen],
+  ["es_pitch_confidence_frames",    "pitch conf",      "essentia", jsonLen],
+  ["es_voice_probability",          "voice prob",      "essentia", v => v ? parseFloat(v).toFixed(3) : null],
+  ["es_voice_probability_musicnn",  "voice musicnn",   "essentia", v => v ? parseFloat(v).toFixed(3) : null],
+  // Essentia — ML models
+  ["es_genre_top_labels",           "genre labels",    "essentia", jsonArr],
+  ["es_genre_probabilities",        "genre probs",     "essentia", jsonLen],
+  ["es_arousal",                    "arousal",         "essentia", v => v ? parseFloat(v).toFixed(3) : null],
+  ["es_valence",                    "valence",         "essentia", v => v ? parseFloat(v).toFixed(3) : null],
+  ["es_mood_aggressive",            "aggressive",      "essentia", v => v ? parseFloat(v).toFixed(3) : null],
+  ["es_mood_happy",                 "happy",           "essentia", v => v ? parseFloat(v).toFixed(3) : null],
+  ["es_mood_party",                 "party",           "essentia", v => v ? parseFloat(v).toFixed(3) : null],
+  ["es_mood_relaxed",               "relaxed",         "essentia", v => v ? parseFloat(v).toFixed(3) : null],
+  ["es_mood_sad",                   "sad",             "essentia", v => v ? parseFloat(v).toFixed(3) : null],
+  ["es_ml_danceability",            "ML dance",        "essentia", v => v ? parseFloat(v).toFixed(3) : null],
+  ["es_instrument_top_labels",      "instruments",     "essentia", jsonArr],
+  ["es_instrument_probabilities",   "inst probs",      "essentia", jsonLen],
+  ["es_moodtheme_top_labels",       "mood themes",     "essentia", jsonArr],
+  ["es_moodtheme_probabilities",    "moodtheme probs", "essentia", jsonLen],
+  // Essentia — meta
+  ["es_version",                    "es version",      "essentia", v => v],
+  ["es_analysis_timestamp",         "es timestamp",    "essentia", v => v],
+  ["es_analysis_error",             "es error",        "essentia", v => v],
 ];
 
 function artCell(v) {
   if (!v) return null;
   return `<img src="${v}" loading="lazy" title="${v}">`;
+}
+
+function jsonLen(v) {
+  if (!v) return null;
+  try { const a = JSON.parse(v); return Array.isArray(a) ? `[${a.length}]` : v; }
+  catch { return v; }
+}
+
+function jsonArr(v) {
+  if (!v) return null;
+  try { const a = JSON.parse(v); return Array.isArray(a) ? a.join(", ") : v; }
+  catch { return v; }
 }
 
 function fmtDuration(v) {
@@ -251,6 +324,42 @@ function setStatus(msg, cls) {
   const el = document.getElementById("status");
   el.textContent = msg;
   el.className = cls || "";
+}
+
+function setFolderStatus(msg, cls) {
+  const el = document.getElementById("folder-status");
+  el.textContent = msg;
+  el.className = cls || "";
+}
+
+async function runFolderImport() {
+  const folder = document.getElementById("folder-path").value.trim();
+  if (!folder) { setFolderStatus("enter a folder path first", "err"); return; }
+  const btn = document.getElementById("folder-btn");
+  btn.disabled = true;
+  setFolderStatus("Scanning and importing…");
+  try {
+    const res = await fetch("/import-folder", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ folder }),
+    });
+    const data = await res.json();
+    if (data.error) {
+      setFolderStatus("Error: " + data.error, "err");
+    } else {
+      setFolderStatus(
+        `Done — ${data.discovered} found, ${data.imported} imported, ` +
+        `${data.skipped} skipped, ${data.errors} errors`,
+        data.errors ? "err" : "ok"
+      );
+      loadTracks();
+    }
+  } catch(e) {
+    setFolderStatus("Request failed: " + e.message, "err");
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 async function runImport() {
