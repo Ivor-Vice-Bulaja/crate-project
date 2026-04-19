@@ -265,3 +265,33 @@ class CoverArtConfig:
 
     # User-Agent header sent with every request.
     user_agent: str = "CrateApp/0.1"
+
+
+@dataclass
+class PipelineConfig:
+    """
+    Single config object passed to import_track() and import_tracks().
+
+    Wraps all per-importer configs so the pipeline signature stays clean.
+    The discogs_client is created once in __post_init__ and reused across
+    all tracks in a session — avoids constructing a new Client per track.
+    """
+
+    acoustid: AcoustIDConfig = field(default_factory=AcoustIDConfig)
+    discogs: DiscogsConfig = field(default_factory=DiscogsConfig)
+    itunes: ItunesConfig = field(default_factory=ItunesConfig)
+    cover_art: CoverArtConfig = field(default_factory=CoverArtConfig)
+    essentia: EssentiaConfig = field(default_factory=EssentiaConfig)
+    max_workers: int = 3
+    # Created in __post_init__; not passed by the caller.
+    discogs_client: object = field(init=False, default=None)
+
+    def __post_init__(self) -> None:
+        import discogs_client as _dc
+
+        token = self.discogs.discogs_token
+        ua = self.discogs.user_agent
+        if token:
+            self.discogs_client = _dc.Client(ua, user_token=token)
+        else:
+            self.discogs_client = _dc.Client(ua)

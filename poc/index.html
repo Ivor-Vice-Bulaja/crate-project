@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Crate — Import POC</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #0f0f0f;
+      color: #e0e0e0;
+      padding: 24px;
+    }
+
+    h1 { font-size: 20px; font-weight: 600; margin-bottom: 4px; }
+    .subtitle { color: #666; font-size: 13px; margin-bottom: 24px; }
+
+    /* Import panel */
+    .import-panel {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      padding: 20px;
+      margin-bottom: 24px;
+    }
+
+    .import-panel h2 { font-size: 14px; font-weight: 600; margin-bottom: 12px; color: #aaa; text-transform: uppercase; letter-spacing: 0.05em; }
+
+    textarea {
+      width: 100%;
+      height: 100px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 6px;
+      color: #e0e0e0;
+      font-family: "SF Mono", "Consolas", monospace;
+      font-size: 12px;
+      padding: 10px;
+      resize: vertical;
+    }
+
+    textarea::placeholder { color: #444; }
+
+    .actions { display: flex; gap: 10px; margin-top: 12px; align-items: center; }
+
+    button {
+      background: #2563eb;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 8px 18px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    button:hover { background: #1d4ed8; }
+    button:disabled { background: #333; color: #666; cursor: not-allowed; }
+    button.secondary { background: #222; border: 1px solid #333; color: #aaa; }
+    button.secondary:hover { background: #2a2a2a; }
+
+    #status { font-size: 13px; color: #666; }
+    #status.ok { color: #4ade80; }
+    #status.err { color: #f87171; }
+
+    /* Table */
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      padding: 12px 16px;
+      background: #1a1a1a;
+      border-bottom: 1px solid #2a2a2a;
+      border-radius: 8px 8px 0 0;
+      flex-wrap: wrap;
+    }
+
+    .toolbar label { font-size: 12px; color: #666; margin-right: 4px; }
+
+    select {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 5px;
+      color: #e0e0e0;
+      font-size: 12px;
+      padding: 4px 8px;
+    }
+
+    #track-count { font-size: 12px; color: #555; margin-left: auto; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    thead th {
+      background: #161616;
+      color: #666;
+      font-weight: 500;
+      text-align: left;
+      padding: 8px 12px;
+      white-space: nowrap;
+      border-bottom: 1px solid #2a2a2a;
+      position: sticky;
+      top: 0;
+    }
+
+    tbody tr { border-bottom: 1px solid #1e1e1e; }
+    tbody tr:hover { background: #1a1a1a; }
+
+    td {
+      padding: 7px 12px;
+      max-width: 260px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: #ccc;
+    }
+
+    td.num { color: #7dd3fc; font-variant-numeric: tabular-nums; }
+    td.ok  { color: #4ade80; }
+    td.miss { color: #333; font-style: italic; }
+    td.art img { width: 40px; height: 40px; object-fit: cover; border-radius: 3px; }
+
+    .empty { padding: 40px; text-align: center; color: #333; font-size: 14px; }
+
+    /* Column group selector */
+    .col-btn {
+      background: #222;
+      border: 1px solid #2a2a2a;
+      border-radius: 4px;
+      color: #888;
+      font-size: 11px;
+      padding: 3px 9px;
+      cursor: pointer;
+    }
+    .col-btn.active { background: #1e3a5f; border-color: #2563eb; color: #7dd3fc; }
+  </style>
+</head>
+<body>
+
+<h1>Crate</h1>
+<p class="subtitle">Import POC — paste file paths, run import, inspect results</p>
+
+<div class="import-panel">
+  <h2>Import tracks</h2>
+  <textarea id="paths" placeholder="Paste absolute file paths, one per line:
+/mnt/c/Users/Gamer/Music/track1.mp3
+/mnt/c/Users/Gamer/Music/track2.wav"></textarea>
+  <div class="actions">
+    <button id="import-btn" onclick="runImport()">Import</button>
+    <button class="secondary" onclick="loadTracks()">Refresh table</button>
+    <span id="status"></span>
+  </div>
+</div>
+
+<div class="table-wrap">
+  <div class="toolbar">
+    <span style="font-size:12px; color:#888; font-weight:600; margin-right:8px;">Columns:</span>
+    <button class="col-btn active" data-group="resolved" onclick="toggleGroup(this)">Resolved</button>
+    <button class="col-btn active" data-group="tags"     onclick="toggleGroup(this)">Tags</button>
+    <button class="col-btn active" data-group="itunes"   onclick="toggleGroup(this)">iTunes</button>
+    <button class="col-btn active" data-group="discogs"  onclick="toggleGroup(this)">Discogs</button>
+    <button class="col-btn active" data-group="acoustid" onclick="toggleGroup(this)">AcoustID/MB</button>
+    <button class="col-btn active" data-group="essentia" onclick="toggleGroup(this)">Essentia</button>
+    <span id="track-count"></span>
+  </div>
+  <div id="table-container"><div class="empty">No tracks yet — import some files above.</div></div>
+</div>
+
+<script>
+// Column definitions: [key, label, group, formatter?]
+const COLS = [
+  // Resolved
+  ["id",                   "ID",              "resolved", v => v],
+  ["resolved_title",       "Title",           "resolved", v => v],
+  ["resolved_artist",      "Artist",          "resolved", v => v],
+  ["resolved_label",       "Label",           "resolved", v => v],
+  ["resolved_year",        "Year",            "resolved", v => v],
+  ["resolved_bpm",         "BPM",             "resolved", v => v ? parseFloat(v).toFixed(1) : null],
+  ["resolved_key",         "Key",             "resolved", v => v],
+  ["resolved_artwork_url", "Art",             "resolved", artCell],
+
+  // Tags
+  ["tag_title",            "tag title",       "tags", v => v],
+  ["tag_artist",           "tag artist",      "tags", v => v],
+  ["tag_label",            "tag label",       "tags", v => v],
+  ["tag_year_id3v24",      "tag year",        "tags", v => v],
+  ["tag_bpm",              "tag bpm",         "tags", v => v],
+  ["tag_key",              "tag key",         "tags", v => v],
+  ["tag_duration_seconds", "duration",        "tags", v => v ? fmtDuration(v) : null],
+  ["tag_file_format",      "format",          "tags", v => v],
+
+  // iTunes
+  ["itunes_track_name",    "iTunes title",    "itunes", v => v],
+  ["itunes_artist_name",   "iTunes artist",   "itunes", v => v],
+  ["itunes_collection_name","iTunes album",   "itunes", v => v],
+  ["itunes_release_date",  "iTunes date",     "itunes", v => v ? v.slice(0,10) : null],
+  ["itunes_genre",         "iTunes genre",    "itunes", v => v],
+  ["itunes_confidence",    "iTunes conf",     "itunes", v => v],
+
+  // Discogs
+  ["discogs_label",        "Discogs label",   "discogs", v => v],
+  ["discogs_catno",        "Discogs catno",   "discogs", v => v],
+  ["discogs_year",         "Discogs year",    "discogs", v => v],
+  ["discogs_styles",       "Discogs styles",  "discogs", v => v],
+  ["discogs_confidence",   "Discogs conf",    "discogs", v => v],
+
+  // AcoustID / MB
+  ["acoustid_score",       "AcoustID score",  "acoustid", v => v ? parseFloat(v).toFixed(3) : null],
+  ["mb_title",             "MB title",        "acoustid", v => v],
+  ["mb_artist",            "MB artist",       "acoustid", v => v],
+  ["mb_label",             "MB label",        "acoustid", v => v],
+  ["mb_year",              "MB year",         "acoustid", v => v],
+
+  // Essentia
+  ["es_bpm",               "es BPM",          "essentia", v => v ? parseFloat(v).toFixed(1) : null],
+  ["es_key",               "es key",          "essentia", v => v],
+  ["es_key_scale",         "es scale",        "essentia", v => v],
+  ["es_loudness_lufs",     "LUFS",            "essentia", v => v ? parseFloat(v).toFixed(1) : null],
+  ["es_danceability",      "dance",           "essentia", v => v ? parseFloat(v).toFixed(2) : null],
+];
+
+function artCell(v) {
+  if (!v) return null;
+  return `<img src="${v}" loading="lazy" title="${v}">`;
+}
+
+function fmtDuration(v) {
+  const s = Math.round(v);
+  return `${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;
+}
+
+const activeGroups = new Set(["resolved","tags","itunes","discogs","acoustid","essentia"]);
+
+function toggleGroup(btn) {
+  const g = btn.dataset.group;
+  if (activeGroups.has(g)) { activeGroups.delete(g); btn.classList.remove("active"); }
+  else { activeGroups.add(g); btn.classList.add("active"); }
+  renderTable(window._tracks || []);
+}
+
+function setStatus(msg, cls) {
+  const el = document.getElementById("status");
+  el.textContent = msg;
+  el.className = cls || "";
+}
+
+async function runImport() {
+  const raw = document.getElementById("paths").value.trim();
+  if (!raw) { setStatus("paste some file paths first", "err"); return; }
+  const paths = raw.split("\n").map(p => p.trim()).filter(Boolean);
+  const btn = document.getElementById("import-btn");
+  btn.disabled = true;
+  setStatus(`Importing ${paths.length} file(s)…`);
+  try {
+    const res = await fetch("/import", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ paths }),
+    });
+    const data = await res.json();
+    const ok = data.filter(r => r.status === "ok").length;
+    const skipped = data.filter(r => r.status === "skipped").length;
+    const errs = data.filter(r => r.status === "error").length;
+    setStatus(`Done — ${ok} imported, ${skipped} skipped, ${errs} errors`, errs ? "err" : "ok");
+    loadTracks();
+  } catch(e) {
+    setStatus("Request failed: " + e.message, "err");
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+async function loadTracks() {
+  try {
+    const res = await fetch("/tracks");
+    const tracks = await res.json();
+    window._tracks = tracks;
+    renderTable(tracks);
+  } catch(e) {
+    setStatus("Could not load tracks: " + e.message, "err");
+  }
+}
+
+function renderTable(tracks) {
+  const container = document.getElementById("table-container");
+  document.getElementById("track-count").textContent = tracks.length
+    ? `${tracks.length} track${tracks.length === 1 ? "" : "s"}`
+    : "";
+
+  if (!tracks.length) {
+    container.innerHTML = '<div class="empty">No tracks yet — import some files above.</div>';
+    return;
+  }
+
+  const visibleCols = COLS.filter(c => activeGroups.has(c[2]));
+
+  const thead = visibleCols.map(([,label]) => `<th>${label}</th>`).join("");
+
+  const tbody = tracks.map(row => {
+    const cells = visibleCols.map(([key, , , fmt]) => {
+      const raw = row[key];
+      const formatted = fmt ? fmt(raw) : raw;
+      if (formatted === null || formatted === undefined || formatted === "") {
+        return `<td class="miss">—</td>`;
+      }
+      if (key === "resolved_artwork_url") {
+        return `<td class="art">${formatted}</td>`;
+      }
+      if (typeof formatted === "number" || key.includes("_id") || key === "id" || key === "acoustid_score") {
+        return `<td class="num" title="${raw}">${formatted}</td>`;
+      }
+      return `<td title="${String(raw).replace(/"/g,'&quot;')}">${formatted}</td>`;
+    }).join("");
+    return `<tr>${cells}</tr>`;
+  }).join("");
+
+  container.innerHTML = `
+    <table>
+      <thead><tr>${thead}</tr></thead>
+      <tbody>${tbody}</tbody>
+    </table>`;
+}
+
+// Load existing tracks on page load
+loadTracks();
+</script>
+</body>
+</html>

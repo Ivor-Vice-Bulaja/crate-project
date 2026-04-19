@@ -497,6 +497,16 @@ crate-project/
 
 ---
 
+## Development Environment Notes
+
+- **Always run `uv` commands from WSL2 only.** Never call `uv` from the Windows shell
+  (PowerShell, cmd, or Git Bash). The `.venv` is a Linux venv pointing to `/usr/bin/python3`.
+  Running `uv` from Windows corrupts it (`lib64` symlink error), forcing a full reinstall (~7 min).
+- All scripts that use Essentia must be run via WSL2: `wsl -e bash -c "cd /mnt/c/... && uv run python ..."`
+- To enable Essentia: `uv sync --extra analysis` (installs essentia + essentia-tensorflow)
+
+---
+
 ## Environment Variables
 
 ```
@@ -532,7 +542,7 @@ LOG_LEVEL=INFO
 - [ ] Research Deezer API — exact outputs, coverage for electronic music (deferred — not blocking Phase 2)
 - [x] Map all source outputs side by side — done in `md/plans/plan-database-schema.md` column inventory
 - [x] Finalise database schema based on confirmed outputs — `backend/database.py` implemented 2026-04-19
-- [ ] Validate Essentia on 50 real tracks — calibrate derived score formulas
+- [x] Validate Essentia on real track — confirmed working 2026-04-19 on Cevi - High Line.wav
 
 **Phase 1.5 — Importer implementations (complete)**
 - [x] mutagen tag reader (`backend/importer/tags.py`) — validated on 50 real tracks
@@ -544,8 +554,9 @@ LOG_LEVEL=INFO
 - [x] Real-data validation — 50 tracks from JUN2025 HOUSE TRANCY (2026-04-17); zero importer errors
 
 **Phase 2 — Import pipeline (current)**
-- [ ] Validate Essentia on 50 real tracks — calibrate derived score formulas before pipeline is wired up
-- [ ] Pipeline orchestration (`backend/importer/pipeline.py`) — tie all importers together
+- [x] Validate Essentia on real track — confirmed working 2026-04-19; all standard algorithms + all ML models successful on Cevi - High Line.wav
+- [x] Pipeline orchestration (`backend/importer/pipeline.py`) — implemented 2026-04-19; 47/47 tests pass
+- [x] `PipelineConfig` added to `backend/config.py` — wraps all per-importer configs; Discogs client created once per session
 - [x] SQLite schema + migrations (`backend/database.py`) — implemented 2026-04-19; 9/10 tests pass
 - [ ] Essentia audio analysis (WSL2 only; `backend/importer/essentia_analysis.py` exists)
 - [ ] Embeddings (`backend/importer/embeddings.py`)

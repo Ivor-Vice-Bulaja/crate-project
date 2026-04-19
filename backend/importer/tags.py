@@ -214,14 +214,14 @@ def _extract_id3(audio, path: str, file_format: str) -> dict:
         selected = next((f for f in comm_frames if f.desc == ""), comm_frames[0])
         result["tag_comment"] = selected.text[0] if selected.text else None
 
-    # Date / year fields
-    result["tag_year_id3v24"] = tags["TDRC"].text[0] if "TDRC" in tags else None
-    result["tag_year_id3v23"] = tags["TYER"].text[0] if "TYER" in tags else None
-    result["tag_date_released"] = tags["TDRL"].text[0] if "TDRL" in tags else None
+    # Date / year fields — mutagen returns ID3TimeStamp objects; stringify them
+    result["tag_year_id3v24"] = str(tags["TDRC"].text[0]) if "TDRC" in tags else None
+    result["tag_year_id3v23"] = str(tags["TYER"].text[0]) if "TYER" in tags else None
+    result["tag_date_released"] = str(tags["TDRL"].text[0]) if "TDRL" in tags else None
     if "TDOR" in tags:
-        result["tag_date_original"] = tags["TDOR"].text[0]
+        result["tag_date_original"] = str(tags["TDOR"].text[0])
     elif "TORY" in tags:
-        result["tag_date_original"] = tags["TORY"].text[0]
+        result["tag_date_original"] = str(tags["TORY"].text[0])
 
     # TXXX fields
     result["tag_catalogue_no"] = _get_txxx(tags, "CATALOGNUMBER") or _get_txxx(tags, "CATALOGID")
