@@ -1,12 +1,12 @@
 """
-import_library.py — CLI entry point for importing a music library into Crate.
+cli.py — CLI entry point for importing a music library into Crate.
 
 Discovers all audio files under a folder, runs move detection to repair stale
 file_path values, then drives the import pipeline with a tqdm progress bar.
 
 Usage:
-    uv run python scripts/import_library.py --folder /path/to/music
-    uv run python scripts/import_library.py --dry-run
+    uv run crate-import --folder /path/to/music
+    uv run crate-import --dry-run
 """
 
 import argparse
@@ -18,11 +18,9 @@ import sys
 import time
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from backend.config import ConfigurationError, PipelineConfig  # noqa: E402
-from backend.database import get_db  # noqa: E402
-from backend.importer.pipeline import import_track  # noqa: E402
+from backend.config import ConfigurationError, PipelineConfig
+from backend.database import get_db
+from backend.importer.pipeline import import_track
 
 
 def _hash_file(path: Path, chunk_size: int = 65536) -> str:

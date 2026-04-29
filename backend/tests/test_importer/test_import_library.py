@@ -1,24 +1,17 @@
 """
-test_import_library.py — Tests for scripts/import_library.py.
+test_import_library.py — Tests for backend/cli.py.
 
 No live network calls in any test. All importers are mocked where needed.
 """
 
 import hashlib
 import logging
-import sys
-from pathlib import Path
 from unittest.mock import patch
 
 import pytest
 
-# scripts/ is not a package — add it to sys.path so we can import directly
-SCRIPTS_DIR = Path(__file__).parent.parent.parent.parent / "scripts"
-sys.path.insert(0, str(SCRIPTS_DIR))
-
-from import_library import _format_duration, detect_moves, discover_files  # noqa: E402
-
-from backend.database import get_db  # noqa: E402
+from backend.cli import _format_duration, detect_moves, discover_files
+from backend.database import get_db
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -179,11 +172,11 @@ def test_dry_run_does_not_call_import(tmp_path):
     (tmp_path / "track.mp3").write_bytes(b"mp3")
 
     with (
-        patch("import_library.discover_files", return_value=[tmp_path / "track.mp3"]),
-        patch("import_library.detect_moves") as mock_moves,
-        patch("sys.argv", ["import_library.py", "--folder", str(tmp_path), "--dry-run"]),
+        patch("backend.cli.discover_files", return_value=[tmp_path / "track.mp3"]),
+        patch("backend.cli.detect_moves") as mock_moves,
+        patch("sys.argv", ["crate-import", "--folder", str(tmp_path), "--dry-run"]),
     ):
-        from import_library import main
+        from backend.cli import main
 
         code = main()
 
@@ -206,16 +199,16 @@ def test_counter_imported(tmp_path, db):
     fake_row = {"resolved_title": "Track"}
 
     with (
-        patch("import_library.get_db", return_value=db),
-        patch("import_library.detect_moves"),
-        patch("import_library.PipelineConfig"),
-        patch("import_library.import_track", return_value=fake_row),
+        patch("backend.cli.get_db", return_value=db),
+        patch("backend.cli.detect_moves"),
+        patch("backend.cli.PipelineConfig"),
+        patch("backend.cli.import_track", return_value=fake_row),
         patch(
             "sys.argv",
-            ["import_library.py", "--folder", str(tmp_path), "--extensions", "mp3"],
+            ["crate-import", "--folder", str(tmp_path), "--extensions", "mp3"],
         ),
     ):
-        from import_library import main
+        from backend.cli import main
 
         code = main()
 
@@ -241,16 +234,16 @@ def test_counter_skipped_vs_error(tmp_path, db):
         return results[path]
 
     with (
-        patch("import_library.get_db", return_value=db),
-        patch("import_library.detect_moves"),
-        patch("import_library.PipelineConfig"),
-        patch("import_library.import_track", side_effect=fake_import_track),
+        patch("backend.cli.get_db", return_value=db),
+        patch("backend.cli.detect_moves"),
+        patch("backend.cli.PipelineConfig"),
+        patch("backend.cli.import_track", side_effect=fake_import_track),
         patch(
             "sys.argv",
-            ["import_library.py", "--folder", str(tmp_path), "--extensions", "mp3"],
+            ["crate-import", "--folder", str(tmp_path), "--extensions", "mp3"],
         ),
     ):
-        from import_library import main
+        from backend.cli import main
 
         code = main()
 
@@ -268,10 +261,10 @@ def test_config_error_exits_1(tmp_path, capsys):
     from backend.config import ConfigurationError
 
     with (
-        patch("import_library.get_db"),
-        patch("import_library.detect_moves"),
+        patch("backend.cli.get_db"),
+        patch("backend.cli.detect_moves"),
         patch(
-            "import_library.PipelineConfig",
+            "backend.cli.PipelineConfig",
             side_effect=ConfigurationError(
                 "Required environment variable 'ACOUSTID_API_KEY' is not set. "
                 "Copy .env.example to .env and fill in your values."
@@ -279,10 +272,10 @@ def test_config_error_exits_1(tmp_path, capsys):
         ),
         patch(
             "sys.argv",
-            ["import_library.py", "--folder", str(tmp_path), "--extensions", "mp3"],
+            ["crate-import", "--folder", str(tmp_path), "--extensions", "mp3"],
         ),
     ):
-        from import_library import main
+        from backend.cli import main
 
         code = main()
 

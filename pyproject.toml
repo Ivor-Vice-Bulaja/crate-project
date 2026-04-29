@@ -60,6 +60,9 @@ dev = [
 # Build system — tells uv/pip how to build this project as a package.
 # You do not need to change this.
 # ---------------------------------------------------------------------------
+[project.scripts]
+crate-import = "backend.cli:main"
+
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
