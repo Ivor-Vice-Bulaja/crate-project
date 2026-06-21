@@ -20,6 +20,7 @@ dependencies = [
     "sentence-transformers>=3.0.0",
     "python3-discogs-client>=2.3.0",
     "rapidfuzz>=3.14.5",
+    "sqlite-vec>=0.1.9",
 ]
 
 # ---------------------------------------------------------------------------

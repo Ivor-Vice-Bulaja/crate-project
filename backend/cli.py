@@ -35,7 +35,10 @@ def discover_files(folder: Path, extensions: set[str]) -> list[Path]:
     paths = [
         p
         for p in folder.rglob("*")
-        if p.is_file() and not p.is_symlink() and p.suffix.lower() in extensions
+        if p.is_file()
+        and not p.is_symlink()
+        and p.suffix.lower() in extensions
+        and not any(part.startswith(".") for part in p.relative_to(folder).parts)
     ]
     return sorted(paths)
 

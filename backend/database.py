@@ -24,7 +24,8 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-_VEC_AVAILABLE = False  # set to True inside get_db() after successful extension load
+_VEC_AVAILABLE = False       # set to True inside get_db() when sqlite-vec loads successfully
+_VEC_TEXT_AVAILABLE = False  # same flag; both tables require sqlite-vec
 
 # ---------------------------------------------------------------------------
 # Migration SQL constants
@@ -286,6 +287,13 @@ CREATE VIRTUAL TABLE IF NOT EXISTS vec_tracks USING vec0(
 );
 """
 
+_MIGRATION_5_VEC_TEXT = """
+CREATE VIRTUAL TABLE IF NOT EXISTS vec_tracks_text USING vec0(
+    track_id  INTEGER PRIMARY KEY,
+    embedding FLOAT[384] distance_metric=cosine
+);
+"""
+
 _MIGRATION_3_INDEXES = """
 CREATE UNIQUE INDEX IF NOT EXISTS idx_tracks_file_path ON tracks(file_path);
 CREATE INDEX IF NOT EXISTS idx_tracks_file_hash ON tracks(file_hash);
@@ -379,6 +387,7 @@ def _build_migrations(vec_available: bool) -> list[tuple[int, str]]:
     ]
     if vec_available:
         migrations.insert(1, (2, _MIGRATION_2_VEC))
+        migrations.append((5, _MIGRATION_5_VEC_TEXT))
     return sorted(migrations, key=lambda x: x[0])
 
 
@@ -426,10 +435,13 @@ def get_db(db_path: str | Path | None = None) -> sqlite3.Connection:
     """
     from backend.config import settings  # lazy import — avoids circular deps
 
+    global _VEC_AVAILABLE, _VEC_TEXT_AVAILABLE
     path = db_path if db_path is not None else settings.db_path
     conn = sqlite3.connect(str(path))
     _configure_connection(conn)
     vec_ok = _load_sqlite_vec(conn)
+    _VEC_AVAILABLE = vec_ok
+    _VEC_TEXT_AVAILABLE = vec_ok
     _run_migrations(conn, vec_available=vec_ok)
     return conn
 

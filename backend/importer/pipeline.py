@@ -26,6 +26,7 @@ from concurrent.futures import TimeoutError as FuturesTimeoutError
 from datetime import UTC, datetime
 from pathlib import Path
 
+import backend.database as _db_module
 from backend.config import PipelineConfig
 from backend.importer.acoustid import identify_track
 from backend.importer.cover_art import fetch_cover_art
@@ -863,27 +864,53 @@ def import_track(
             return None
 
         # ------------------------------------------------------------------
-        # Step 9 — Embeddings write (optional; gated on essentia embedding)
+        # Step 9 — Embeddings write (non-fatal)
+        #
+        # Two independent vec tables, both require sqlite-vec:
+        #   vec_tracks      — Essentia EffNet audio embedding (1280-dim)
+        #                     written only when Essentia analysis ran
+        #   vec_tracks_text — sentence-transformers text embedding (384-dim)
+        #                     always written; built from all populated attributes
         # ------------------------------------------------------------------
-        embedding = essentia_result.get("embedding") if essentia_result else None
-        if embedding is not None:
+        audio_embedding = essentia_result.get("embedding") if essentia_result else None
+        needs_write = (
+            (audio_embedding is not None and _db_module._VEC_AVAILABLE)
+            or (_db_module._VEC_TEXT_AVAILABLE and config.embeddings.enabled)
+        )
+        if needs_write:
             try:
-                from backend.database import _VEC_AVAILABLE
+                import struct
 
-                if _VEC_AVAILABLE:
-                    import struct
+                cursor = db.execute("SELECT id FROM tracks WHERE file_path = ?", (path,))
+                track_id = cursor.fetchone()["id"]
 
-                    vec_bytes = struct.pack(f"{len(embedding)}f", *embedding)
-                    cursor = db.execute("SELECT id FROM tracks WHERE file_path = ?", (path,))
-                    track_id = cursor.fetchone()["id"]
+                # Audio embedding (Essentia EffNet, 1280-dim) → vec_tracks
+                if audio_embedding is not None and _db_module._VEC_AVAILABLE:
+                    vec_bytes = struct.pack(f"{len(audio_embedding)}f", *audio_embedding)
                     db.execute("DELETE FROM vec_tracks WHERE track_id = ?", (track_id,))
                     db.execute(
                         "INSERT INTO vec_tracks(track_id, embedding) VALUES (?, ?)",
                         (track_id, vec_bytes),
                     )
-                    db.commit()
+
+                # Text embedding (sentence-transformers, 384-dim) → vec_tracks_text
+                if _db_module._VEC_TEXT_AVAILABLE and config.embeddings.enabled:
+                    from backend.importer.embeddings import embed_row as _embed_row
+
+                    text_vec = _embed_row(row, config.embeddings.model_name)
+                    if text_vec is not None:
+                        text_bytes = struct.pack(f"{len(text_vec)}f", *text_vec)
+                        db.execute(
+                            "DELETE FROM vec_tracks_text WHERE track_id = ?", (track_id,)
+                        )
+                        db.execute(
+                            "INSERT INTO vec_tracks_text(track_id, embedding) VALUES (?, ?)",
+                            (track_id, text_bytes),
+                        )
+
+                db.commit()
             except Exception as exc:
-                tlog.warning("vec_tracks write failed (non-fatal): %s", exc)
+                tlog.warning("Embeddings write failed (non-fatal): %s", exc)
 
         if progress_callback:
             progress_callback("done")

@@ -268,6 +268,24 @@ class CoverArtConfig:
 
 
 @dataclass
+class EmbeddingsConfig:
+    """
+    Settings for sentence-transformers text embeddings (vec_tracks_text).
+
+    Text embeddings are always written on import, regardless of whether
+    Essentia audio analysis is available. The model is loaded once per
+    session and cached in memory.
+    """
+
+    # sentence-transformers model name. all-MiniLM-L6-v2 is 384-dim,
+    # fast on CPU, and a solid general-purpose semantic similarity model.
+    model_name: str = "all-MiniLM-L6-v2"
+
+    # Set False to skip text embedding writes entirely (useful in tests).
+    enabled: bool = True
+
+
+@dataclass
 class PipelineConfig:
     """
     Single config object passed to import_track() and import_tracks().
@@ -282,6 +300,7 @@ class PipelineConfig:
     itunes: ItunesConfig = field(default_factory=ItunesConfig)
     cover_art: CoverArtConfig = field(default_factory=CoverArtConfig)
     essentia: EssentiaConfig = field(default_factory=EssentiaConfig)
+    embeddings: EmbeddingsConfig = field(default_factory=EmbeddingsConfig)
     max_workers: int = 3
     # Created in __post_init__; not passed by the caller.
     discogs_client: object = field(init=False, default=None)

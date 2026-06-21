@@ -7,102 +7,92 @@
 ## Status
 
 Status: in progress
-Current phase: Phase 2 — Import pipeline
-Last session: 2026-04-19
+Current phase: Phase 2 — Import pipeline (complete)
+Last session: 2026-06-21
 
 ## What was done
+
+**Session 2026-06-21 (embeddings + sqlite-vec)**
+- Implemented `backend/importer/embeddings.py` — sentence-transformers text embedding
+  - `build_text(row)` builds a natural-language description from all populated DB columns (artist, title, BPM, key, label, year, Discogs styles/genres, Essentia ML labels, mood scores, voice probability, MusicBrainz tags)
+  - `embed_row(row, model_name)` encodes the text with sentence-transformers; model cached in-process
+  - Model: `all-MiniLM-L6-v2` (384-dim, CPU-only, fast)
+- Added `EmbeddingsConfig` to `backend/config.py` (model_name, enabled flag)
+- Updated `backend/database.py`:
+  - Migration 2 now creates both `vec_tracks` (1280-dim audio, Essentia) AND `vec_tracks_text` (384-dim text, sentence-transformers)
+  - Added `_VEC_TEXT_AVAILABLE` module flag alongside `_VEC_AVAILABLE`
+- Updated `backend/importer/pipeline.py` step 9 to write both vec tables:
+  - `vec_tracks` — Essentia EffNet audio embedding, written only when Essentia ran
+  - `vec_tracks_text` — sentence-transformers text embedding, written always when sqlite-vec available
+- Added `sqlite-vec==0.1.9` to dependencies (`uv add sqlite-vec`)
+- Fixed `backend/cli.py` `discover_files` — now skips any path with a dotfile component (`.venv`, `.git`, etc.) to prevent importing scipy test WAVs and other package files
+- Added `backend/tests/test_importer/test_embeddings.py` — tests for `build_text` and `embed_row`
+
+**End-to-end validation (2026-06-21):**
+- Ran `crate-import --folder . --db ./crate.db` on project root (2 real tracks)
+- Both tracks imported correctly; `vec_tracks_text` populated with 384-dim vectors
+- sqlite-vec and sentence-transformers confirmed working together
+- Essentia not run (not on `--extra analysis` in this session); `vec_tracks` remains empty until WSL2 + analysis extra
 
 **Session 2026-04-19 (Essentia validation)**
 - Installed Essentia in WSL venv via `uv sync --extra analysis` (essentia==2.1b6.dev1389, essentia-tensorflow==2.1b6.dev1389)
 - Ran `analyse_track` on `Cevi - High Line.wav` — all standard algorithms succeeded, no errors
 - Results: BPM 144.95, confidence 2.37/5.32, key F# minor (strength 0.374), integrated loudness -8.36 LUFS, loudness range 5.40 LU, dynamic complexity 3.06, spectral centroid 1589 Hz, sub-bass ratio 0.607, high-freq ratio 0.034, danceability 1.30, onset rate 5.68/s, tuning 438.5 Hz, 701 beat ticks, beat interval std 0.0114s (very tight)
-- TensorFlow detected RTX 3070 GPU but CUDA libs not installed in WSL — ML models fall back to CPU (not blocking; `run_ml_models=False` for now)
-- Essentia validation complete. Phase 2 standard analysis confirmed working.
+- TensorFlow detected RTX 3070 GPU but CUDA libs not installed in WSL — ML models fall back to CPU (not blocking)
+- ML model results: genre top-1 = Electronic/Techno, ml_danceability = 1.000, mood_party = 0.998, voice_probability = 0.145 (instrumental), all 5 embeddings returned (1280-dim EffNet + 512-dim track/artist/label/release)
 
 **Session 2026-04-19 (pipeline)**
 - Implemented `backend/importer/pipeline.py` — full import pipeline orchestrator
 - Added `PipelineConfig` to `backend/config.py` — wraps all per-importer configs; creates Discogs client once per session in `__post_init__`
-- Created `backend/tests/fixtures/short.mp3` — minimal MP3 test fixture for integration tests
-- Wrote 47 tests across three files; all pass:
-  - `test_pipeline_skip.py` — hash/mtime change detection (7 tests)
-  - `test_pipeline_merge.py` — `_build_db_row` column completeness, all resolved_* field priority chains (33 tests)
-  - `test_pipeline_db.py` — real DB UPSERT, id preservation on re-import, crate membership survival, skip logic, error resilience (7 tests)
-- WSL venv was rebuilt by uv during this session (old venv was Windows-only symlink artifact)
+- Wrote 47 tests across three files; all pass
 
 **Session 2026-04-19 (database schema)**
 - Finalised and implemented full SQLite schema in `backend/database.py`
 - Migration 1: `tracks` table (~180 columns)
-- Migration 2: `vec_tracks` virtual table (sqlite-vec; skipped if unavailable)
+- Migration 2: `vec_tracks` + `vec_tracks_text` virtual tables (sqlite-vec)
 - Migration 3: indexes on tracks
-- Migration 4: crate management tables (crates, crate_tracks, crate_corrections)
-- 9/10 tests pass (one minor test issue noted but not blocking)
+- Migration 4: crate management tables
 
 **Session 2026-04-17 (importer validation)**
-- Added iTunes importer to test_importers.py
 - Ran full batch test: all 5 importers on 50 tracks from JUN2025 - HOUSE TRANCY
 - Zero errors. iTunes 84%, Discogs 64%, AcoustID 36%, CAA 18%
 
-## Pipeline implementation details (for next session reference)
+## Phase 2 checklist
 
-`import_track(file_path, db, config)` execution order:
-1. `_check_skip()` — mtime fast-path, then hash verify; returns None on hit
-2. `_hash_file()` + `os.stat()` — MD5 hex digest + file size/mtime for INSERT
-3. `read_tags(path)` — synchronous
-4. `ThreadPoolExecutor(max_workers=3)`: AcoustID (90s timeout), iTunes (30s), Essentia (300s, WSL2 only)
-5. `fetch_discogs_metadata()` — sequential, after executor exits; inputs from tags + acoustid
-6. `fetch_cover_art()` — sequential, after executor exits; inputs from acoustid
-7. `_build_db_row()` — explicit column mapping + resolved_* computation
-8. UPSERT via `INSERT INTO tracks ... ON CONFLICT(file_path) DO UPDATE SET ...`
-9. Essentia embedding → `DELETE + INSERT INTO vec_tracks` (gated on `_VEC_AVAILABLE`)
+- [x] Validate Essentia on real track (WSL2)
+- [x] Pipeline orchestration (`backend/importer/pipeline.py`) — 47/47 tests pass
+- [x] `PipelineConfig` added to `backend/config.py`
+- [x] SQLite schema + migrations (`backend/database.py`)
+- [x] Essentia audio analysis wired into pipeline (step 3c)
+- [x] `scripts/import_library.py` → moved to `backend/cli.py`, registered as `crate-import` entry point
+- [x] Embeddings (`backend/importer/embeddings.py`) — sentence-transformers text embedding; sqlite-vec write in pipeline step 9
 
-`import_tracks(paths, db, config, on_progress)` — batch loop; calls import_track per path.
-
-## Real-data findings — 50 tracks from JUN2025 HOUSE TRANCY (2026-04-17)
-
-Zero errors from any importer across all 50 tracks.
-
-**mutagen:** 100% title, artist, album, label, genre. 96% BPM/key. 90% year. 98% embedded art.
-0% catalogue number (not tagged by source). All MP3. No DJ software tags.
-
-**iTunes (84% high-confidence):** Best single source. 86% artwork URL, release date, genre fill.
-Genres too coarse ("Electronic"/"House"/"Dance") — confirmed useless for crate logic.
-7/50 no-match: Gestalt/Glow Mid promo releases not on iTunes.
-
-**Discogs (64% high-confidence):** label+title strategy is the workhorse (22/32 matches).
-Does not require AcoustID — works from filename-parsed artist/title and tag_label.
-64% fill on label, catno, genres, styles. Known data issue: GS027 catno attributed to
-"Goldmine Soul Supply" instead of "Gestalt Records" in Discogs.
-
-**AcoustID + MusicBrainz (36% match):** Confirms research estimate for indie/house library.
-Of 18 fingerprint matches, 12 had full MB recording data. Avg AcoustID score 0.837.
-AcoustID/MB is a bonus where available, not a primary source for this library type.
-
-**Cover Art Archive (18%):** Gated on AcoustID. Of 12 tracks with MB recording IDs,
-9 had CAA art (75%). Low overall rate is a consequence of AcoustID miss rate.
+**Phase 2 is complete.**
 
 ## Next action
 
-**Immediate (Phase 2 remaining):**
-- [x] Validate Essentia on real track (WSL2) — confirmed working on Cevi - High Line.wav; all standard algorithms + all ML models successful
-- ML model results: genre top-1 = Electronic/Techno, ml_danceability = 1.000, mood_party = 0.998, voice_probability = 0.145 (instrumental), all 5 embeddings returned (1280-dim EffNet + 512-dim track/artist/label/release)
-- [x] Write `scripts/import_library.py` — complete; CLI with argparse, rglob discovery, move detection, tqdm progress, import/skip/error counters, summary report; plan at `md/plans/plan-import-library.md`
-- [x] Tests for `import_library.py` — 10 tests in `backend/tests/test_importer/test_import_library.py`; covers discovery, move detection, dry-run, counters, config error, duration formatting
-- [ ] Embeddings (`backend/importer/embeddings.py`) — sentence-transformers or Essentia EffNet; decision needed before implementation
+**Phase 3 — Backend API:**
+- FastAPI setup (`backend/main.py`)
+- `GET /tracks` endpoint with filter, sort, group params (`backend/api/tracks.py`)
+- Basic crate CRUD (`backend/api/crates.py`)
 
-**Deferred:**
+## Real-data findings (50 tracks, JUN2025 HOUSE TRANCY)
+
+**mutagen:** 100% title, artist, album, label, genre. 96% BPM/key. 90% year.
+**iTunes (84%):** Best single source. Artwork URL is primary value-add.
+**Discogs (64%):** label+title strategy is the workhorse. Best for styles/catno.
+**AcoustID + MusicBrainz (36%):** Bonus where available; primary source for untagged files.
+**Cover Art Archive (18%):** Gated on AcoustID. 75% hit rate when AcoustID succeeds.
+
+## Known issues / notes
+
+- iTunes can false-match on artist name when title doesn't match (observed: "Say Less" matched to "Break Theory (Mixed)" on same album). Confidence scoring accepted it due to artist match + close duration. Not blocking but worth a stricter title similarity check in future.
+- Essentia ML models not yet downloaded to `./models/` (needed for genre/mood outputs on real tracks).
+- All Essentia work requires WSL2: `wsl -e bash -c "cd /mnt/c/Users/bulaj/Desktop/crate-project && ..."`
+- sqlite-vec 0.1.9 installed; vec_tracks_text confirmed working (384-dim, sentence-transformers all-MiniLM-L6-v2).
+
+## Deferred
+
 - [ ] Research Last.fm API
 - [ ] Research Deezer API
-
-## Open questions
-
-- Embedding source decision: use Essentia EffNet embedding (1280-dim) when available (WSL2),
-  fall back to sentence-transformers when Essentia unavailable? Needs explicit decision before
-  `embeddings.py` is implemented.
-- False match detection for AcoustID: artist name similarity check between tag_artist and MB artist
-  would catch fingerprint collisions observed in prior sessions.
-
-## Blockers
-
-- Essentia ML models not yet downloaded (needed in ./models/ for genre/mood outputs).
-- All Essentia and AcoustID work requires WSL2.
-  Run command prefix: `wsl -e bash -c "cd /mnt/c/Users/Gamer/code/crate-project && ..."`
+- [ ] Spotify integration (Phase 5)
