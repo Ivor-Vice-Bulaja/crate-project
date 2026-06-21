@@ -10,6 +10,7 @@ Never writes to the file.
 
 import logging
 import os
+import re
 from pathlib import Path
 
 import mutagen
@@ -21,6 +22,56 @@ import mutagen.oggvorbis
 import mutagen.wave
 
 logger = logging.getLogger(__name__)
+
+# ---------------------------------------------------------------------------
+# Search string normalisation
+# ---------------------------------------------------------------------------
+
+# DJ-library filename suffixes that carry no search value and confuse iTunes.
+# Matched case-insensitively, anywhere in the title string.
+_TITLE_NOISE_RE = re.compile(
+    r"\b(vinyl[\s_-]*only|free[\s_-]*dl|free[\s_-]*download|promo[\s_-]*only|promo)\b",
+    re.IGNORECASE,
+)
+
+# Artist separator variants that iTunes does not understand.
+# " x " and " vs " (with surrounding spaces) → " & "
+_ARTIST_SEP_RE = re.compile(r"\s+(?:x|vs\.?)\s+", re.IGNORECASE)
+
+
+def clean_search_title(title: str) -> str:
+    """
+    Strip DJ-library filename noise from a title before passing it to iTunes.
+
+    Removes suffixes like "VINYL ONLY", "FREE DL", "FREE DOWNLOAD", "PROMO".
+    Collapses any double spaces left behind and strips leading/trailing whitespace.
+
+    Examples:
+        "A1 Espeon VINYL ONLY"  → "A1 Espeon"
+        "Track (FREE DL)"       → "Track ()"   # parentheses left; iTunes ignores them
+        "My Track PROMO"        → "My Track"
+    """
+    cleaned = _TITLE_NOISE_RE.sub("", title)
+    cleaned = re.sub(r"  +", " ", cleaned).strip()
+    return cleaned
+
+
+def normalise_artist(artist: str) -> str:
+    """
+    Normalise artist separator variants to " & " for iTunes search.
+
+    iTunes understands " & " and "," as multi-artist separators but not " x "
+    or " vs ". This normalisation improves match rate for tracks whose filenames
+    use the DJ convention of "Artist A x Artist B".
+
+    Examples:
+        "Asphalt DJ x Gzardin"  → "Asphalt DJ & Gzardin"
+        "A vs B"                → "A & B"
+        "A vs. B"               → "A & B"
+        "A & B"                 → "A & B"   (unchanged)
+    """
+    return _ARTIST_SEP_RE.sub(" & ", artist)
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -163,14 +214,14 @@ def _extract_id3(audio, path: str, file_format: str) -> dict:
         selected = next((f for f in comm_frames if f.desc == ""), comm_frames[0])
         result["tag_comment"] = selected.text[0] if selected.text else None
 
-    # Date / year fields
-    result["tag_year_id3v24"] = tags["TDRC"].text[0] if "TDRC" in tags else None
-    result["tag_year_id3v23"] = tags["TYER"].text[0] if "TYER" in tags else None
-    result["tag_date_released"] = tags["TDRL"].text[0] if "TDRL" in tags else None
+    # Date / year fields — mutagen returns ID3TimeStamp objects; stringify them
+    result["tag_year_id3v24"] = str(tags["TDRC"].text[0]) if "TDRC" in tags else None
+    result["tag_year_id3v23"] = str(tags["TYER"].text[0]) if "TYER" in tags else None
+    result["tag_date_released"] = str(tags["TDRL"].text[0]) if "TDRL" in tags else None
     if "TDOR" in tags:
-        result["tag_date_original"] = tags["TDOR"].text[0]
+        result["tag_date_original"] = str(tags["TDOR"].text[0])
     elif "TORY" in tags:
-        result["tag_date_original"] = tags["TORY"].text[0]
+        result["tag_date_original"] = str(tags["TORY"].text[0])
 
     # TXXX fields
     result["tag_catalogue_no"] = _get_txxx(tags, "CATALOGNUMBER") or _get_txxx(tags, "CATALOGID")

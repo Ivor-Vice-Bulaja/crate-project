@@ -19,7 +19,7 @@ import sqlite3
 import pytest
 from fastapi.testclient import TestClient
 
-from backend.database import init_db
+from backend.database import get_db
 from backend.main import app
 
 
@@ -33,12 +33,9 @@ def db() -> sqlite3.Connection:
     - Each test starts with a pristine, empty database
     - Tests run faster (no disk I/O)
 
-    The schema is created fresh for each test by calling init_db().
+    get_db(':memory:') configures the connection and applies all migrations.
     """
-    conn = sqlite3.connect(":memory:")
-    conn.row_factory = sqlite3.Row
-    conn.execute("PRAGMA foreign_keys=ON")
-    init_db(conn)
+    conn = get_db(":memory:")
     yield conn
     conn.close()
 

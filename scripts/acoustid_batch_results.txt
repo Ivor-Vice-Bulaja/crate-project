@@ -1,0 +1,2656 @@
+========================================
+FILE: 01. Mambana - Felicidad (Axwell Vocal Edit).flac
+========================================
+
+Looking up: 01. Mambana - Felicidad (Axwell Vocal Edit).flac
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         777692d0-8bdd-45e0-969c-53d7cab76be0
+  acoustid_score                      0.9400
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     940eb327-9adb-4c91-8afd-e26cdc44eea8
+  mb_release_id                       4fd01605-af11-4df6-b2ca-7c119cf76795
+  mb_artist_id                        7947e7a2-8d1b-46c2-b41c-b1dfaa14ad7b
+
+  Track metadata
+  ──────────────
+  title                               Felicidad (Axwell vocal mix)
+  artist                              Mambana
+  artist_sort_name                    Mambana
+  year                                2008
+  mb_duration_s                       249.0000
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    Superdeejays
+  mb_release_group_type               Album
+  release_status                      Official
+  release_country                     XE
+  label                               Blanco y Negro Music
+  catalogue_number                    MXCD 1820 CB
+
+  Tags & genres
+  ─────────────
+  genres                              []
+  tags                                []
+
+
+========================================
+FILE: 02 Mambana - No Reason Part 2 (DJ Meri Vox).flac
+========================================
+
+Looking up: 02 Mambana - No Reason Part 2 (DJ Meri Vox).flac
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         28ed8dca-3d49-4b5a-b403-34f476c6dc40
+  acoustid_score                      0.8996
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: 02. Mambana - Felicidad (Axwell Vocal Mix).flac
+========================================
+
+Looking up: 02. Mambana - Felicidad (Axwell Vocal Mix).flac
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         fd55655c-869f-487f-ae8e-9c8cdb13b68b
+  acoustid_score                      0.9660
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     b4f9524c-320a-404d-a65f-dbd88271e6a7
+  mb_release_id                       c7f75966-3217-43cc-bab3-4e10721bf242
+  mb_artist_id                        7947e7a2-8d1b-46c2-b41c-b1dfaa14ad7b
+
+  Track metadata
+  ──────────────
+  title                               Felicidad (Axwell vocal mix)
+  artist                              Mambana
+  artist_sort_name                    Mambana
+  year                                2004
+  mb_duration_s                       397.6800
+  isrc                                USSF90400271
+
+  Release
+  ───────
+  mb_release_title                    Hed Kandi: Disco Kandi 05.04
+  mb_release_group_type               Album
+  release_status                      Official
+  release_country                     GB
+  label                               Hed Kandi
+  catalogue_number                    HEDK043
+
+  Tags & genres
+  ─────────────
+  genres                              []
+  tags                                []
+
+
+========================================
+FILE: 03 Feel the Music.flac
+========================================
+
+Looking up: 03 Feel the Music.flac
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         925571c8-df98-408e-bdb2-1d4fcb75baf0
+  acoustid_score                      0.9714
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     77765afc-896f-4f07-b356-1e4146223783
+  mb_release_id                       34d12036-2161-46ac-b874-c792efeefbce
+  mb_artist_id                        3b0adc13-b1d2-4ce9-9f7b-fc4f9dbfabbb
+
+  Track metadata
+  ──────────────
+  title                               Feel the Music
+  artist                              Grant Nelson
+  artist_sort_name                    Nelson, Grant
+  year                                2023
+  mb_duration_s                       396.3220
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    Feel The Music / The Sound
+  mb_release_group_type               EP
+  release_status                      Official
+  release_country                     XW
+  label                               Swing City Records
+  catalogue_number                    CITY 1044
+
+  Tags & genres
+  ─────────────
+  genres                              []
+  tags                                []
+
+
+========================================
+FILE: 03. Libre (Axwell Essence Dub).flac
+========================================
+
+Looking up: 03. Libre (Axwell Essence Dub).flac
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         b3657df7-c3cd-44f7-82d4-b695680f05c3
+  acoustid_score                      0.9908
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     2f64fc33-01d7-4096-9b8d-c77c59a6f335
+  mb_release_id                       75b38df4-2ce9-4459-a13b-0203cc77bf0b
+  mb_artist_id                        7947e7a2-8d1b-46c2-b41c-b1dfaa14ad7b
+
+  Track metadata
+  ──────────────
+  title                               Libre (Axwell Essence Dub)
+  artist                              Mambana
+  artist_sort_name                    Mambana
+  year                                2003
+  mb_duration_s                       423.0000
+  isrc                                GBKCF1900754
+
+  Release
+  ───────
+  mb_release_title                    Libre
+  mb_release_group_type               Single
+  release_status                      None
+  release_country                     SE
+  label                               Playground Music Scandinavia
+  catalogue_number                    SFCDM 1
+
+  Tags & genres
+  ─────────────
+  genres                              []
+  tags                                []
+
+
+========================================
+FILE: 03. Mambana - Felicidad (Axwell Dub Mode).flac
+========================================
+
+Looking up: 03. Mambana - Felicidad (Axwell Dub Mode).flac
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         9e46a436-10f6-4f12-b6c2-dc5bec21cddc
+  acoustid_score                      0.8906
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: 04 The Sound.flac
+========================================
+
+Looking up: 04 The Sound.flac
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         d8315771-c261-41fa-b292-232ebf9aaeba
+  acoustid_score                      0.9521
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: 04. Mambana - Felicidad (Rasmus Faber Remix).flac
+========================================
+
+Looking up: 04. Mambana - Felicidad (Rasmus Faber Remix).flac
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         78a96b4d-cd3d-460a-81a9-09a5909e4583
+  acoustid_score                      0.9779
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     d970e3c7-4661-4b21-91bb-25f29fc20249
+  mb_release_id                       e3d069ea-0f59-4e46-b7d4-f08327a7671d
+  mb_artist_id                        7947e7a2-8d1b-46c2-b41c-b1dfaa14ad7b
+
+  Track metadata
+  ──────────────
+  title                               Felicidad (Rasmus Faber remix)
+  artist                              MambanaIsabel Fructuoso
+  artist_sort_name                    Mambana
+  year                                2006
+  mb_duration_s                       399.0000
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    So Far
+  mb_release_group_type               Album
+  release_status                      Official
+  release_country                     JP
+  label                               Victor
+  catalogue_number                    VICP-63409
+
+  Tags & genres
+  ─────────────
+  genres                              []
+  tags                                []
+
+
+========================================
+FILE: 05. Mambana - Felicidad (JJK Reversoul Vocal Edit).flac
+========================================
+
+Looking up: 05. Mambana - Felicidad (JJK Reversoul Vocal Edit).flac
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: 2002-Mambana - No Reason (Axwell Vocal Mix)-16bit-44.1Khz.flac
+========================================
+
+Looking up: 2002-Mambana - No Reason (Axwell Vocal Mix)-16bit-44.1Khz.flac
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         debadc4a-1c3e-44c4-880a-5ae4d1219fe3
+  acoustid_score                      1.0000
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     2dc36da5-d7cf-411e-a18b-0e6df49c2e78
+  mb_release_id                       d154a34a-cda2-411a-8a97-1bdc4af524e0
+  mb_artist_id                        7947e7a2-8d1b-46c2-b41c-b1dfaa14ad7b
+
+  Track metadata
+  ──────────────
+  title                               No Reason (Axwell vocal mix)
+  artist                              Mambana
+  artist_sort_name                    Mambana
+  year                                2002
+  mb_duration_s                       429.2530
+  isrc                                GBKCF1900735
+
+  Release
+  ───────
+  mb_release_title                    Latino Beats 3 (A Deep Latin House Trip)
+  mb_release_group_type               Album
+  release_status                      Official
+  release_country                     NL
+  label                               Sony Music Media
+  catalogue_number                    SMM 509910 2
+
+  Tags & genres
+  ─────────────
+  genres                              []
+  tags                                [house]
+
+
+========================================
+FILE: 21 - Mambana - Libre (Axwell Vocal Mix).flac
+========================================
+
+Looking up: 21 - Mambana - Libre (Axwell Vocal Mix).flac
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         4428e30e-4bcb-4743-830a-37ceb5bc2ed2
+  acoustid_score                      1.0000
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     92b89ba5-00b8-4133-b089-4a02d0f9c881
+  mb_release_id                       da8775e4-eeb8-46a8-9843-f947c9bf4cbf
+  mb_artist_id                        7947e7a2-8d1b-46c2-b41c-b1dfaa14ad7b
+
+  Track metadata
+  ──────────────
+  title                               Libre (Axwell vocal mix)
+  artist                              Mambana
+  artist_sort_name                    Mambana
+  year                                2003
+  mb_duration_s                       402.4260
+  isrc                                DEN120305018
+
+  Release
+  ───────
+  mb_release_title                    Hed Kandi: Beach House 04.03
+  mb_release_group_type               Album
+  release_status                      Official
+  release_country                     GB
+  label                               Hed Kandi
+  catalogue_number                    HEDK033
+
+  Tags & genres
+  ─────────────
+  genres                              []
+  tags                                []
+
+
+========================================
+FILE: 23 - Mambana - Libre (Axwell Mix).flac
+========================================
+
+Looking up: 23 - Mambana - Libre (Axwell Mix).flac
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         699f3379-3938-4656-af46-09e78391c532
+  acoustid_score                      1.0000
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     b1e47dc8-c068-40a0-a19a-aa1b1f61141a
+  mb_release_id                       a72fe029-f0c5-43b0-905e-bdbc7c9dea27
+  mb_artist_id                        ab77c1ff-f2df-4499-966c-1070d81e0a76
+
+  Track metadata
+  ──────────────
+  title                               Summer Daze
+  artist                              Nick Holder
+  artist_sort_name                    Holder, Nick
+  year                                2001
+  mb_duration_s                       340.0260
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    Fresh House Flava 4
+  mb_release_group_type               Album
+  release_status                      Official
+  release_country                     ZA
+  label                               House Afrika Records
+  catalogue_number                    CDGUMBA (WR) 721
+
+  Tags & genres
+  ─────────────
+  genres                              []
+  tags                                []
+
+
+========================================
+FILE: Kathy Sledge - Another Star (Roger's Hard Mix).flac
+========================================
+
+Looking up: Kathy Sledge - Another Star (Roger's Hard Mix).flac
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         6c93f222-6879-434b-a436-2e7894d98918
+  acoustid_score                      0.9774
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: 190. Grant Nelson - In Motion (Original Mix).mp3
+========================================
+
+Looking up: 190. Grant Nelson - In Motion (Original Mix).mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         eed96ccc-7e0d-454f-b416-76f444ec01a1
+  acoustid_score                      0.8475
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     4b94c3a8-9bbe-4514-94b0-9d92ccaad20d
+  mb_release_id                       846a0cf0-6726-4927-8783-b800f0089cab
+  mb_artist_id                        99c6b2ba-bcda-4732-b62a-054d3fc1f1a9
+
+  Track metadata
+  ──────────────
+  title                               in motion
+  artist                              ハイスイノナサ
+  artist_sort_name                    Haisuinonasa
+  year                                2013
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    reflection
+  mb_release_group_type               Single
+  release_status                      Official
+  release_country                     JP
+  label                               残響record
+  catalogue_number                    ZNR-128
+
+  Tags & genres
+  ─────────────
+  genres                              []
+  tags                                []
+
+
+========================================
+FILE: Cavi - F The Disco (Original Mix) [Too Many Rules].mp3
+========================================
+
+Looking up: Cavi - F The Disco (Original Mix) [Too Many Rules].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         e3709e43-b987-49d4-a305-6ae2b3935e8b
+  acoustid_score                      0.9985
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     68dbbc9c-bb3d-4501-bcc5-a4206ec563dc
+  mb_release_id                       f7aa7c2f-0efa-446a-a3f9-1a9ee5ea88d1
+  mb_artist_id                        499bf6b3-9e1a-4cd3-bf3b-ac3f04ddfb79
+
+  Track metadata
+  ──────────────
+  title                               F The Disco
+  artist                              Cavi
+  artist_sort_name                    Cavi
+  year                                2020
+  mb_duration_s                       284.5060
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    Our Beats
+  mb_release_group_type               None
+  release_status                      Official
+  release_country                     XW
+  label                               Too Many Rules
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              []
+  tags                                []
+
+
+========================================
+FILE: DJ Steaw feat Mr. V - Take It There [Nu Groove Records].mp3
+========================================
+
+Looking up: DJ Steaw feat Mr. V - Take It There [Nu Groove Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Danny Parton - Bames Jlake (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Danny Parton - Bames Jlake (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Danny Parton - Champagne (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Danny Parton - Champagne (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Danny Parton - Head in the sky (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Danny Parton - Head in the sky (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Danny Parton - Hotspot (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Danny Parton - Hotspot (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Danny Parton - In the groove (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Danny Parton - In the groove (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         4764565e-09e3-40f7-a61b-42a94e37eb1a
+  acoustid_score                      0.9991
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Danny Parton - Instashit (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Danny Parton - Instashit (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Danny Parton - Orange Juice (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Danny Parton - Orange Juice (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Danny Parton - Someone (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Danny Parton - Someone (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Dave & Omar - Starlight (Grant Nelson VIP Dub) [Z Records].mp3
+========================================
+
+Looking up: Dave & Omar - Starlight (Grant Nelson VIP Dub) [Z Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         1de70524-bae9-4f5d-b158-a5bd7cebf18f
+  acoustid_score                      0.9983
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     5b02afce-96b1-4c8a-b94b-cfb7d74bab19
+  mb_release_id                       72a62256-ed49-43b3-9370-b021eba183a4
+  mb_artist_id                        bd5d5e5e-7782-44aa-9265-34753d7f35d4
+
+  Track metadata
+  ──────────────
+  title                               Starlight (Grant Nelson VIP Dub)
+  artist                              DaveOmar
+  artist_sort_name                    Lee, Dave
+  year                                2023
+  mb_duration_s                       391.9340
+  isrc                                GBPKF2300149
+
+  Release
+  ───────
+  mb_release_title                    Dave Lee's 2023 Essentials
+  mb_release_group_type               Album
+  release_status                      Official
+  release_country                     XW
+  label                               Z Records
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              []
+  tags                                []
+
+
+========================================
+FILE: Demuir - The Feeling of Knowing (Original Mix) [Purveyor Underground].mp3
+========================================
+
+Looking up: Demuir - The Feeling of Knowing (Original Mix) [Purveyor Underground].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         c6f243aa-c3c0-419f-b952-15f1a29316e0
+  acoustid_score                      0.9523
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     304acc50-25a3-4b4e-8156-ba867d8004c5
+  mb_release_id                       0ff4b4dd-e44e-48b7-9795-9f5b11058c58
+  mb_artist_id                        2f908e66-7002-4211-b7b8-d256e0a7d171
+
+  Track metadata
+  ──────────────
+  title                               The Feeling of Knowing
+  artist                              Demuir
+  artist_sort_name                    Demuir
+  year                                2023
+  mb_duration_s                       410.1750
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    V I S I O N S
+  mb_release_group_type               Album
+  release_status                      Official
+  release_country                     XW
+  label                               Purveyor Underground
+  catalogue_number                    PULABM01
+
+  Tags & genres
+  ─────────────
+  genres                              []
+  tags                                []
+
+
+========================================
+FILE: Grant Nelson - Celebrate Love [Swing City].mp3
+========================================
+
+Looking up: Grant Nelson - Celebrate Love [Swing City].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         c6db29d2-f36d-474e-8b47-ccfd8f319d46
+  acoustid_score                      0.8918
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Grant Nelson - Everything [Swing City].mp3
+========================================
+
+Looking up: Grant Nelson - Everything [Swing City].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Grant Nelson - Fly High [Swing City].mp3
+========================================
+
+Looking up: Grant Nelson - Fly High [Swing City].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Grant Nelson - Grant Nelson - Sunshine (Original Mix).mp3
+========================================
+
+Looking up: Grant Nelson - Grant Nelson - Sunshine (Original Mix).mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         07e387fa-2ce6-4dcb-b2ba-aba1017bbd5a
+  acoustid_score                      0.8188
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     59feabea-2064-4b63-86c1-62111a9bc590
+  mb_release_id                       0f5ef45f-4f6c-4e21-8e2e-17312813a957
+  mb_artist_id                        3b0adc13-b1d2-4ce9-9f7b-fc4f9dbfabbb
+
+  Track metadata
+  ──────────────
+  title                               Sunshine
+  artist                              Grant Nelson
+  artist_sort_name                    Nelson, Grant
+  year                                2024
+  mb_duration_s                       341.9850
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    Sunshine
+  mb_release_group_type               None
+  release_status                      Official
+  release_country                     XW
+  label                               Swing City Records
+  catalogue_number                    CITY 1115
+
+  Tags & genres
+  ─────────────
+  genres                              []
+  tags                                []
+
+
+========================================
+FILE: Grant Nelson - Relentless [Swing City].mp3
+========================================
+
+Looking up: Grant Nelson - Relentless [Swing City].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         1ca99c86-3cf5-436f-a1ee-2160c0131e20
+  acoustid_score                      0.9972
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     0d7cdf58-c87d-48b7-b4e9-92c6d631d313
+  mb_release_id                       389a1d9e-62bc-4480-a942-66dcb95e1b9a
+  mb_artist_id                        fa6f7611-1908-4f61-baba-5fe168bb6e9b
+
+  Track metadata
+  ──────────────
+  title                               Relentless
+  artist                              Killari
+  artist_sort_name                    Killari
+  year                                2025
+  mb_duration_s                       301.8800
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    Relentless
+  mb_release_group_type               None
+  release_status                      Official
+  release_country                     XW
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              []
+  tags                                []
+
+
+========================================
+FILE: Grant Nelson - Violent Bliss (Original Mix) [Nice 'N' Ripe].mp3
+========================================
+
+Looking up: Grant Nelson - Violent Bliss (Original Mix) [Nice 'N' Ripe].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         f5611ea8-6e25-4020-b3a7-1303f3f3764c
+  acoustid_score                      0.9985
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Grant Nelson, Lil Suze - Rush [Swing City].mp3
+========================================
+
+Looking up: Grant Nelson, Lil Suze - Rush [Swing City].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Hard Drive Library - Another  [Hard Drive Library].mp3
+========================================
+
+Looking up: Hard Drive Library - Another  [Hard Drive Library].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Hard Drive Library - Less Euphoric  [Hard Drive Library].mp3
+========================================
+
+Looking up: Hard Drive Library - Less Euphoric  [Hard Drive Library].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Jeremy Delvila - Big Brother (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Jeremy Delvila - Big Brother (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Jeremy Delvila - Feel Better (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Jeremy Delvila - Feel Better (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Jeremy Delvila - My Love (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Jeremy Delvila - My Love (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         414e6ff4-a481-4031-b9ee-becdcfd88780
+  acoustid_score                      0.4787
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Luca Olivotto - Ahora Comprendo [theBasement Discos].mp3
+========================================
+
+Looking up: Luca Olivotto - Ahora Comprendo [theBasement Discos].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         9dc289fb-7366-4d7e-9786-63d6a2e1beec
+  acoustid_score                      0.9893
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     01c93677-8832-42bc-a1d8-0b3a625b1ef5
+  mb_release_id                       2a864f96-7565-435a-9e1d-4b80a504e3b6
+  mb_artist_id                        f2269a98-1bf5-42ef-a182-9aaa373c991b
+
+  Track metadata
+  ──────────────
+  title                               Ahora Comprendo
+  artist                              Luca Olivotto
+  artist_sort_name                    Luca Olivotto
+  year                                2022
+  mb_duration_s                       317.8130
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    BEST OF 2022
+  mb_release_group_type               Album
+  release_status                      Official
+  release_country                     XW
+  label                               theBasement Discos
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              []
+  tags                                []
+
+
+========================================
+FILE: Luca Olivotto - Azzurro (Original Mix) [theBasement Discos].mp3
+========================================
+
+Looking up: Luca Olivotto - Azzurro (Original Mix) [theBasement Discos].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Lynsey Moore, Ramsey & Fen - Love Bug 2015 (Grant Nelson Remix) [Bug Records].mp3
+========================================
+
+Looking up: Lynsey Moore, Ramsey & Fen - Love Bug 2015 (Grant Nelson Remix) [Bug Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         384978a1-05dc-4352-9b04-5987f12f7fa9
+  acoustid_score                      0.9716
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: MAXI MERAKI - Constellations [True Romance Records].mp3
+========================================
+
+Looking up: MAXI MERAKI - Constellations [True Romance Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Mambana - No Reason (Jazz-N-Groove Dub).mp3
+========================================
+
+Looking up: Mambana - No Reason (Jazz-N-Groove Dub).mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Mike Parton - Aspirateur (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Mike Parton - Aspirateur (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Mike Parton - Bisou (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Mike Parton - Bisou (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Mike Parton - Discofloor (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Mike Parton - Discofloor (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Mike Parton - Djazz (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Mike Parton - Djazz (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Mike Parton - Don't Look My Name (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Mike Parton - Don't Look My Name (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Mike Parton - Free as a Bird (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Mike Parton - Free as a Bird (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Mike Parton - Go out! (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Mike Parton - Go out! (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Mike Parton - Housewife (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Mike Parton - Housewife (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Mike Parton - Tounu (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Mike Parton - Tounu (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Mike Parton - What a mess (Extended Mix) [Jolene Records].mp3
+========================================
+
+Looking up: Mike Parton - What a mess (Extended Mix) [Jolene Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Negrocan - Aquela Esquina (Grant Nelson Club Mix).mp3
+========================================
+
+Looking up: Negrocan - Aquela Esquina (Grant Nelson Club Mix).mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         0b1de212-f458-44d3-b1c6-1d0a59e2d0d1
+  acoustid_score                      0.9920
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     4aadf29e-36e9-456b-8f36-fe4744fd371e
+  mb_release_id                       18d24e5a-881d-4b9c-96d1-f9420837d363
+  mb_artist_id                        4b4ccac9-a6d0-4e33-b21a-9d7579ec9a56
+
+  Track metadata
+  ──────────────
+  title                               Aquela Esquina (Grant Nelson club mix)
+  artist                              Negrocan
+  artist_sort_name                    Negrocan
+  year                                2001
+  mb_duration_s                       315.6660
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    Nite:Life 08
+  mb_release_group_type               Album
+  release_status                      Official
+  release_country                     GB
+  label                               EFA
+  catalogue_number                    25558-2
+
+  Tags & genres
+  ─────────────
+  genres                              []
+  tags                                []
+
+
+========================================
+FILE: Negrocan - Cada Vez (Grant Nelson Vocal Mix) 1999 (320kbps).mp3
+========================================
+
+Looking up: Negrocan - Cada Vez (Grant Nelson Vocal Mix) 1999 (320kbps).mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Rosy Cheeks - Butterman (Original Mix) [Lotss Records].mp3
+========================================
+
+Looking up: Rosy Cheeks - Butterman (Original Mix) [Lotss Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Stef Davidse - On Da Groove (Original Mix) [OVRDOSE DEEP].mp3
+========================================
+
+Looking up: Stef Davidse - On Da Groove (Original Mix) [OVRDOSE DEEP].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Street Player - Feel My Love [True Romance Records].mp3
+========================================
+
+Looking up: Street Player - Feel My Love [True Romance Records].mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      False
+  acoustid_id                         None
+  acoustid_score                      None
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     None
+  mb_release_id                       None
+  mb_artist_id                        None
+
+  Track metadata
+  ──────────────
+  title                               None
+  artist                              None
+  artist_sort_name                    None
+  year                                None
+  mb_duration_s                       None
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    None
+  mb_release_group_type               None
+  release_status                      None
+  release_country                     None
+  label                               None
+  catalogue_number                    None
+
+  Tags & genres
+  ─────────────
+  genres                              None
+  tags                                None
+
+
+========================================
+FILE: Tilman - Don't Wanna Hear It.mp3
+========================================
+
+Looking up: Tilman - Don't Wanna Hear It.mp3
+  Label lookup:   enabled
+  MB rate limit:  enabled
+
+
+  AcoustID
+  ────────
+  acoustid_match                      True
+  acoustid_id                         8251d16f-e068-45bd-b6ea-b62e982a6cbc
+  acoustid_score                      0.8930
+
+  MusicBrainz IDs
+  ───────────────
+  mb_recording_id                     3d473960-bd86-4ca4-bd00-e410a0e7321c
+  mb_release_id                       4556f4f1-0c8e-4c28-b912-d59edf093223
+  mb_artist_id                        5fd73629-465b-44ac-9061-765babd7b5c2
+
+  Track metadata
+  ──────────────
+  title                               Been Around
+  artist                              Adeva
+  artist_sort_name                    Adeva
+  year                                1999
+  mb_duration_s                       197.3330
+  isrc                                None
+
+  Release
+  ───────
+  mb_release_title                    Hitbreaker ’99: Die Erste
+  mb_release_group_type               Album
+  release_status                      Official
+  release_country                     DE
+  label                               SR International
+  catalogue_number                    34 880 5
+
+  Tags & genres
+  ─────────────
+  genres                              []
+  tags                                []
+
+
+--- DONE: 59 files processed ---

@@ -179,9 +179,7 @@ class DiscogsConfig:
     # Personal access token for Discogs API auth.
     # None → unauthenticated, rate-limited to 25 req/min.
     # Set via DISCOGS_TOKEN env var.
-    discogs_token: str | None = field(
-        default_factory=lambda: _optional("DISCOGS_TOKEN") or None
-    )
+    discogs_token: str | None = field(default_factory=lambda: _optional("DISCOGS_TOKEN") or None)
 
     # User-Agent header sent with every request.
     # Required by Discogs API terms of service.
@@ -212,6 +210,45 @@ class DiscogsConfig:
 
 
 @dataclass
+class ItunesConfig:
+    """
+    All tuneable settings for the iTunes Search API enrichment module.
+
+    Pass an instance of this to fetch_itunes(). Nothing is hardcoded in
+    itunes.py — every knob lives here.
+    """
+
+    # User-Agent header sent with all requests.
+    user_agent: str = "CrateApp/0.1 (contact@example.com)"
+
+    # Number of candidates fetched per search call (iTunes limit param).
+    max_search_results: int = 5
+
+    # Minimum total score to accept a match as "high" confidence.
+    confidence_threshold: float = 0.7
+
+    # Maximum duration difference (seconds) to accept a candidate.
+    # 15s is tight enough to distinguish different mixes of the same track
+    # (e.g. Original Mix at 332s vs Ojala Remix at 352s = 19.7s diff → rejected).
+    duration_tolerance_seconds: float = 15.0
+
+    # Ordered list of country codes to try after US returns zero results.
+    country_fallbacks: list = field(default_factory=lambda: ["gb", "de"])
+
+    # Whether to use the ?id= endpoint for re-lookups of stored trackId values.
+    fetch_lookup: bool = True
+
+    # Pixel size for artwork URL template substitution.
+    artwork_size: int = 600
+
+    # Inter-request delay in seconds (applied after every HTTP call).
+    rate_limit_delay: float = 3.1
+
+    # requests.get timeout in seconds.
+    request_timeout: int = 10
+
+
+@dataclass
 class CoverArtConfig:
     """
     All tuneable settings for the Cover Art Archive lookup module.
@@ -228,3 +265,33 @@ class CoverArtConfig:
 
     # User-Agent header sent with every request.
     user_agent: str = "CrateApp/0.1"
+
+
+@dataclass
+class PipelineConfig:
+    """
+    Single config object passed to import_track() and import_tracks().
+
+    Wraps all per-importer configs so the pipeline signature stays clean.
+    The discogs_client is created once in __post_init__ and reused across
+    all tracks in a session — avoids constructing a new Client per track.
+    """
+
+    acoustid: AcoustIDConfig = field(default_factory=AcoustIDConfig)
+    discogs: DiscogsConfig = field(default_factory=DiscogsConfig)
+    itunes: ItunesConfig = field(default_factory=ItunesConfig)
+    cover_art: CoverArtConfig = field(default_factory=CoverArtConfig)
+    essentia: EssentiaConfig = field(default_factory=EssentiaConfig)
+    max_workers: int = 3
+    # Created in __post_init__; not passed by the caller.
+    discogs_client: object = field(init=False, default=None)
+
+    def __post_init__(self) -> None:
+        import discogs_client as _dc
+
+        token = self.discogs.discogs_token
+        ua = self.discogs.user_agent
+        if token:
+            self.discogs_client = _dc.Client(ua, user_token=token)
+        else:
+            self.discogs_client = _dc.Client(ua)
